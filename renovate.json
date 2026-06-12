@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":dependencyDashboard",
     ":automergePatch",
     ":automergeMinor",
@@ -46,21 +46,27 @@
     },
     {
       "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["^vaultwarden/server$", "^caddy$", "^adguard/adguardhome$", "^portainer/portainer-ce$", "^containrrr/watchtower$"],
       "groupName": "homelab-docker-images",
       "labels": ["docker", "homelab"],
-      "schedule": ["after 2am on sunday"]
+      "schedule": ["after 2am on sunday"],
+      "matchPackageNames": [
+        "/^vaultwarden/server$/",
+        "/^caddy$/",
+        "/^adguard/adguardhome$/",
+        "/^portainer/portainer-ce$/",
+        "/^containrrr/watchtower$/"
+      ]
     }
   ],
   "docker-compose": {
-    "fileMatch": [
-      "^services/.*docker-compose\\.ya?ml$"
+    "managerFilePatterns": [
+      "/^services/.*docker-compose\\.ya?ml$/"
     ]
   },
   "github-actions": {
-    "fileMatch": [
-      ".github/workflows/*.yml",
-      ".github/workflows/*.yaml"
+    "managerFilePatterns": [
+      "/.github/workflows/*.yml/",
+      "/.github/workflows/*.yaml/"
     ]
   },
   "ignorePaths": [
