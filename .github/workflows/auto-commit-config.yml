@@ -33,15 +33,17 @@ jobs:
           ssh homeserver@192.168.0.206 << 'EOF'
           cat > /tmp/homelab-configs.json << 'JSONEOF'
           {
-            "adguardhome": "$(cat /home/homeserver/AdGuardHome.yaml | base64 -w0)",
+            "adguardhome": "$(docker exec adguardhome cat /opt/adguardhome/conf/AdGuardHome.yaml | base64 -w0)",
             "caddyfile": "$(cat /home/homeserver/Caddyfile | base64 -w0)",
-            "vaultwarden_compose": "$(cat /home/homeserver/vaultwarden/docker-compose.yml | base64 -w0)",
             "watchtower_compose": "$(cat /home/homeserver/watchtower/docker-compose.yml | base64 -w0)",
             "caddy_compose": "$(cat /home/homeserver/caddy/docker-compose.yml | base64 -w0)"
           }
           JSONEOF
           cat /tmp/homelab-configs.json
           EOF
+
+      # Note: vaultwarden docker-compose is NOT auto-synced because it contains
+      # the live ADMIN_TOKEN. Update it manually if needed.
 
       - name: Compare and update configs
         id: compare
@@ -68,11 +70,10 @@ jobs:
             fi
           }
           
-          check_file "/home/homeserver/AdGuardHome.yaml" "services/adguardhome/AdGuardHome.yaml" "AdGuardHome.yaml"
-          check_file "/home/homeserver/Caddyfile" "services/caddy/Caddyfile" "Caddyfile"
-          check_file "/home/homeserver/vaultwarden/docker-compose.yml" "services/vaultwarden/docker-compose.yml" "vaultwarden/docker-compose.yml"
-          check_file "/home/homeserver/watchtower/docker-compose.yml" "services/watchtower/docker-compose.yml" "watchtower/docker-compose.yml"
-          check_file "/home/homeserver/caddy/docker-compose.yml" "services/caddy/docker-compose.yml" "caddy/docker-compose.yml"
+           check_file "/home/homeserver/AdGuardHome.yaml" "services/adguardhome/AdGuardHome.yaml" "AdGuardHome.yaml"
+           check_file "/home/homeserver/Caddyfile" "services/caddy/Caddyfile" "Caddyfile"
+           check_file "/home/homeserver/watchtower/docker-compose.yml" "services/watchtower/docker-compose.yml" "watchtower/docker-compose.yml"
+           check_file "/home/homeserver/caddy/docker-compose.yml" "services/caddy/docker-compose.yml" "caddy/docker-compose.yml"
           
           if [ "$CHANGED" = true ]; then
             echo "changed=true" >> $GITHUB_OUTPUT

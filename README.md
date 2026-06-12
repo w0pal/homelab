@@ -241,15 +241,17 @@ Run manually from Actions tab or set up a cron schedule.
 
 ## Secrets Management
 
-**Never commit secrets to this repo!** Use these instead:
+**Never commit secrets to this repo!**
+
+The only secret used by GitHub Actions is:
 
 | Secret | Where to Set |
 |--------|--------------|
-| `VAULTWARDEN_ADMIN_TOKEN` | GitHub Repository Settings → Secrets → Actions |
-| `DOMAIN` | GitHub Repository Settings → Secrets → Actions |
-| `ADGUARD_PASSWORD` | GitHub Repository Settings → Secrets → Actions |
+| `HOMESERVER_SSH_KEY` | GitHub Repository Settings → Secrets → Actions |
 
-Template files (`.env.example`) show required variables.
+This allows the auto-sync workflow to SSH into the homeserver and pull config changes.
+
+Template files (`.env.example`) show required variables for local deployment.
 
 ---
 
