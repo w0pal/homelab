@@ -18,7 +18,7 @@
   "commitMessageAction": "update",
   "commitMessageExtra": "to {{newVersion}}",
   "prTitle": "chore(deps): update {{depName}} to {{newVersion}}",
-  "prBodyTemplateFile": ".github/renovate-pr-template.md",
+  "prBodyTemplate": "{{>renovate-pr-template.md}}",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dependency Dashboard",
   "packageRules": [
