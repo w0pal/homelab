@@ -1,0 +1,71 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":automergePatch",
+    ":automergeMinor",
+    ":label(renovate)",
+    ":prConcurrentLimitNone"
+  ],
+  "timezone": "Asia/Jakarta",
+  "schedule": [
+    "every weekend"
+  ],
+  "gitAuthor": "renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+  "commitMessagePrefix": "chore(deps): ",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageAction": "update",
+  "commitMessageExtra": "to {{newVersion}}",
+  "prTitle": "chore(deps): update {{depName}} to {{newVersion}}",
+  "prBodyTemplateFile": ".github/renovate-pr-template.md",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dependency Dashboard",
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["major-update"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^vaultwarden/server$", "^caddy$", "^adguard/adguardhome$", "^portainer/portainer-ce$", "^containrrr/watchtower$"],
+      "groupName": "homelab-docker-images",
+      "labels": ["docker", "homelab"],
+      "schedule": ["after 2am on sunday"]
+    }
+  ],
+  "docker-compose": {
+    "fileMatch": [
+      "^services/.*docker-compose\\.ya?ml$"
+    ]
+  },
+  "github-actions": {
+    "fileMatch": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ]
+  },
+  "ignorePaths": [
+    "scripts/",
+    "docs/"
+  ]
+}

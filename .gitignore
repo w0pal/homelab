@@ -1,0 +1,68 @@
+# Secrets and credentials
+*.env
+.env*
+!*.env.example
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Vaultwarden data
+services/vaultwarden/vw-data/
+
+# AdGuard Home work directory
+services/adguardhome/work/
+
+# Docker volumes and data
+**/data/
+**/volumes/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Terraform/Ansible state (if used)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# SSH keys
+.ssh/
+id_rsa
+id_ed25519
+id_ecdsa
+
+# Certificates (generated)
+certs/
+*.pem
+*.crt
+*.key
+
+# Renovate
+renovate.json.bak

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      - DOMAIN=https://${DOMAIN:-lab.tailf2af36.ts.net}
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-true}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - LOG_LEVEL=info
+      - EXTENDED_LOGGING=true
+    volumes:
+      - ./vw-data:/data
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - shared-web
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  shared-web:
+    external: true
+
+# Run: docker compose up -d
+# Requires: ADMIN_TOKEN in .env file
+# Optional: DOMAIN, SIGNUPS_ALLOWED

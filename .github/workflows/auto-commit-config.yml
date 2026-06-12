@@ -1,0 +1,96 @@
+name: Auto-commit Server Config Changes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-commit:
+    name: Check for config changes on server
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HOMESERVER_SSH_KEY }}
+
+      - name: Add server to known hosts
+        run: ssh-keyscan -H 192.168.0.206 >> ~/.ssh/known_hosts
+
+      - name: Generate config snapshot on server
+        run: |
+          ssh homeserver@192.168.0.206 << 'EOF'
+          cat > /tmp/homelab-configs.json << 'JSONEOF'
+          {
+            "adguardhome": "$(cat /home/homeserver/AdGuardHome.yaml | base64 -w0)",
+            "caddyfile": "$(cat /home/homeserver/Caddyfile | base64 -w0)",
+            "vaultwarden_compose": "$(cat /home/homeserver/vaultwarden/docker-compose.yml | base64 -w0)",
+            "watchtower_compose": "$(cat /home/homeserver/watchtower/docker-compose.yml | base64 -w0)",
+            "caddy_compose": "$(cat /home/homeserver/caddy/docker-compose.yml | base64 -w0)"
+          }
+          JSONEOF
+          cat /tmp/homelab-configs.json
+          EOF
+
+      - name: Compare and update configs
+        id: compare
+        run: |
+          # Fetch current repo configs as base64 for comparison
+          mkdir -p /tmp/repo-configs
+          
+          # We need to compare each file
+          CHANGED=false
+          
+          # Function to check and update a file
+          check_file() {
+            local server_path=$1
+            local repo_path=$2
+            local filename=$3
+            
+            SERVER_CONTENT=$(ssh homeserver@192.168.0.206 "cat $server_path | base64 -w0")
+            REPO_CONTENT=$(cat $repo_path | base64 -w0)
+            
+            if [ "$SERVER_CONTENT" != "$REPO_CONTENT" ]; then
+              echo "Change detected in $filename"
+              scp homeserver@192.168.0.206:$server_path $repo_path
+              CHANGED=true
+            fi
+          }
+          
+          check_file "/home/homeserver/AdGuardHome.yaml" "services/adguardhome/AdGuardHome.yaml" "AdGuardHome.yaml"
+          check_file "/home/homeserver/Caddyfile" "services/caddy/Caddyfile" "Caddyfile"
+          check_file "/home/homeserver/vaultwarden/docker-compose.yml" "services/vaultwarden/docker-compose.yml" "vaultwarden/docker-compose.yml"
+          check_file "/home/homeserver/watchtower/docker-compose.yml" "services/watchtower/docker-compose.yml" "watchtower/docker-compose.yml"
+          check_file "/home/homeserver/caddy/docker-compose.yml" "services/caddy/docker-compose.yml" "caddy/docker-compose.yml"
+          
+          if [ "$CHANGED" = true ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: auto-sync homeserver configs" -m "Auto-detected and synced configuration changes from homeserver at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No changes
+        if: steps.compare.outputs.changed == 'false'
+        run: echo "No configuration changes detected"
