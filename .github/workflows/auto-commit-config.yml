@@ -29,7 +29,7 @@ jobs:
         id: server
         run: |
           mkdir -p ~/.ssh
-          if ssh-keyscan -T 5 -H 192.168.0.206 >> ~/.ssh/known_hosts 2>/dev/null; then
+          if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new homeserver@192.168.0.206 exit; then
             echo "reachable=true" >> "$GITHUB_OUTPUT"
           else
             echo "reachable=false" >> "$GITHUB_OUTPUT"
