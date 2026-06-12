@@ -10,8 +10,8 @@ permissions:
 
 jobs:
   check-and-commit:
-    name: Check for config changes on server
-    runs-on: ubuntu-latest
+    name: Check for config changes
+    runs-on: [self-hosted, linux, arm64]
     timeout-minutes: 5
     steps:
       - name: Checkout repository
@@ -20,80 +20,36 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.HOMESERVER_SSH_KEY }}
-
-      - name: Check server SSH reachability
-        id: server
+      - name: Sync AdGuard Home config
         run: |
-          mkdir -p ~/.ssh
-          if timeout 5 ssh-keyscan -H 192.168.0.206 >> ~/.ssh/known_hosts 2>/dev/null \
-            && ssh -o BatchMode=yes -o ConnectTimeout=5 homeserver@192.168.0.206 true; then
-            echo "reachable=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "reachable=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Homeserver is unreachable from this runner. Skipping config sync."
-          fi
+          cp /home/homeserver/adguardhome/conf/AdGuardHome.yaml services/adguardhome/AdGuardHome.yaml
 
-      - name: Generate config snapshot on server
-        if: steps.server.outputs.reachable == 'true'
+      - name: Sync Caddy config
         run: |
-          ssh homeserver@192.168.0.206 << 'EOF'
-          cat > /tmp/homelab-configs.json << 'JSONEOF'
-          {
-            "adguardhome": "$(docker exec adguardhome cat /opt/adguardhome/conf/AdGuardHome.yaml | base64 -w0)",
-            "caddyfile": "$(cat /home/homeserver/Caddyfile | base64 -w0)",
-            "watchtower_compose": "$(cat /home/homeserver/watchtower/docker-compose.yml | base64 -w0)",
-            "caddy_compose": "$(cat /home/homeserver/caddy/docker-compose.yml | base64 -w0)"
-          }
-          JSONEOF
-          cat /tmp/homelab-configs.json
-          EOF
+          cp /home/homeserver/Caddyfile services/caddy/Caddyfile
 
-      # Note: vaultwarden docker-compose is NOT auto-synced because it contains
-      # the live ADMIN_TOKEN. Update it manually if needed.
-
-      - name: Compare and update configs
-        id: compare
-        if: steps.server.outputs.reachable == 'true'
+      - name: Sync Watchtower config
         run: |
-          # Fetch current repo configs as base64 for comparison
-          mkdir -p /tmp/repo-configs
-          
-          # We need to compare each file
-          CHANGED=false
-          
-          # Function to check and update a file
-          check_file() {
-            local server_path=$1
-            local repo_path=$2
-            local filename=$3
-            
-            SERVER_CONTENT=$(ssh homeserver@192.168.0.206 "cat $server_path | base64 -w0")
-            REPO_CONTENT=$(cat $repo_path | base64 -w0)
-            
-            if [ "$SERVER_CONTENT" != "$REPO_CONTENT" ]; then
-              echo "Change detected in $filename"
-              scp homeserver@192.168.0.206:$server_path $repo_path
-              CHANGED=true
-            fi
-          }
-          
-           check_file "/home/homeserver/AdGuardHome.yaml" "services/adguardhome/AdGuardHome.yaml" "AdGuardHome.yaml"
-           check_file "/home/homeserver/Caddyfile" "services/caddy/Caddyfile" "Caddyfile"
-           check_file "/home/homeserver/watchtower/docker-compose.yml" "services/watchtower/docker-compose.yml" "watchtower/docker-compose.yml"
-           check_file "/home/homeserver/caddy/docker-compose.yml" "services/caddy/docker-compose.yml" "caddy/docker-compose.yml"
-          
-          if [ "$CHANGED" = true ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
+          cp /home/homeserver/watchtower/docker-compose.yml services/watchtower/docker-compose.yml
+
+      - name: Sync Caddy docker-compose
+        run: |
+          cp /home/homeserver/caddy/docker-compose.yml services/caddy/docker-compose.yml
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected:"
+            git diff --stat
           fi
 
       - name: Commit and push changes
-        if: steps.server.outputs.reachable == 'true' && steps.compare.outputs.changed == 'true'
+        if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -104,9 +60,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: No changes
-        if: steps.server.outputs.reachable == 'true' && steps.compare.outputs.changed == 'false'
+        if: steps.changes.outputs.changed == 'false'
         run: echo "No configuration changes detected"
-
-      - name: Server unreachable
-        if: steps.server.outputs.reachable == 'false'
-        run: echo "Homeserver is unreachable from this runner. Config sync skipped."
