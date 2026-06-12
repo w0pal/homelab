@@ -257,13 +257,17 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ## Hardware
 
-- **Device**: ZTE B860H
-- **SoC**: Amlogic p212 (4 cores @ 1.51 GHz)
-- **GPU**: Amlogic meson-gxl-mali [Integrated]
-- **RAM**: 1.75 GiB
-- **Storage**: 58.24 GiB (eMMC) + 6.47 GiB (SD)
-- **OS**: Armbian 26.5.1 trixie (aarch64)
-- **Kernel**: Linux 6.12.91-ophub
+Device specs:
+
+- **ZTE B860H** (this homeserver)
+  ```
+  OS: Armbian 26.5.1 trixie aarch64
+  Kernel: Linux 6.12.91-ophub
+  SoC: Amlogic p212 (4 cores @ 1.51 GHz)
+  GPU: Amlogic meson-gxl-mali [Integrated]
+  RAM: 1.75 GiB
+  Storage: 58.24 GiB (SD) + 6.47 GiB (eMMC)
+  ```
 
 ---
 
