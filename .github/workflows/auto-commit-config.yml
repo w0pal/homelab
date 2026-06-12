@@ -22,7 +22,7 @@ jobs:
 
       - name: Sync AdGuard Home config
         run: |
-          cp /home/homeserver/adguardhome/conf/AdGuardHome.yaml services/adguardhome/AdGuardHome.yaml
+          docker exec adguardhome cat /opt/adguardhome/conf/AdGuardHome.yaml > services/adguardhome/AdGuardHome.yaml
 
       - name: Sync Caddy config
         run: |
