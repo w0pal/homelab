@@ -1,14 +1,14 @@
 http:
   pprof:
     port: 6060
-    enabled: false
+    enabled: true
   doh:
     routes:
       - GET /dns-query
       - POST /dns-query
       - GET /dns-query/{ClientID}
       - POST /dns-query/{ClientID}
-    insecure_enabled: false
+    insecure_enabled: true
   address: 0.0.0.0:3000
   session_ttl: 30d
 users:
@@ -17,7 +17,7 @@ users:
 auth_attempts: 5
 block_auth_min: 15
 http_proxy: ""
-language: en
+language: ""
 theme: auto
 dns:
   bind_hosts:
@@ -30,7 +30,7 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - https://cloudflare-dns.com/dns-query
+    - https://security.cloudflare-dns.com/dns-query
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.10
@@ -58,10 +58,10 @@ dns:
   cache_optimistic_max_age: 12h
   bogus_nxdomain: []
   aaaa_disabled: false
-  enable_dnssec: false
+  enable_dnssec: true
   edns_client_subnet:
     custom_ip: ""
-    enabled: false
+    enabled: true
     use_custom: false
   max_goroutines: 300
   handle_ddr: true
@@ -70,7 +70,7 @@ dns:
   bootstrap_prefer_ipv6: false
   upstream_timeout: 10s
   private_networks: []
-  use_private_ptr_resolvers: false
+  use_private_ptr_resolvers: true
   local_ptr_upstreams: []
   use_dns64: false
   dns64_prefixes: []
@@ -101,11 +101,12 @@ querylog:
   interval: 90d
   size_memory: 1000
   enabled: true
-  ignored_enabled: true
+  ignored_enabled: false
   file_enabled: true
 statistics:
   dir_path: ""
-  ignored: []
+  ignored:
+    - pixiv.net
   interval: 1d
   enabled: true
   ignored_enabled: false
@@ -118,36 +119,23 @@ filters:
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
     name: AdAway Default Blocklist
     id: 2
-  - enabled: false
-    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.mini.txt
-    name: HaGeZi Pro mini
-    id: 1779376512
-  - enabled: false
+  - enabled: true
     url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt
     name: HaGeZi Pro
-    id: 1779936892
-  - enabled: false
-    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/ultimate.txt
-    name: HaGeZi Multi Ultimate
-    id: 1780571383
-  - enabled: true
-    url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
-    name: AdGuard DNS filter
-    id: 1
+    id: 1780963786
 whitelist_filters: []
 user_rules:
   - '@@||www.pixiv.net^$important'
   - '@@||pixiv.net^$important'
-  - ""
 dhcp:
   enabled: false
-  interface_name: ""
+  interface_name: wlan0
   local_domain_name: lan
   dhcpv4:
-    gateway_ip: ""
-    subnet_mask: ""
-    range_start: ""
-    range_end: ""
+    gateway_ip: 192.168.0.1
+    subnet_mask: 255.255.255.0
+    range_start: 192.168.0.100
+    range_end: 192.168.0.200
     lease_duration: 86400
     icmp_timeout_msec: 1000
     options: []
@@ -162,14 +150,7 @@ filtering:
   blocked_services:
     schedule:
       time_zone: UTC
-    ids:
-      - betano
-      - betfair
-      - betway
-      - blaze
-      - plenty_of_fish
-      - tinder
-      - wizz
+    ids: []
   protection_disabled_until: null
   safe_search:
     enabled: true
@@ -184,19 +165,13 @@ filtering:
   parental_block_host: family-block.dns.adguard.com
   safebrowsing_block_host: standard-block.dns.adguard.com
   rewrites:
-    - domain: router.test
-      answer: 192.168.0.1
-      enabled: true
-    - domain: ashariputra.cctv.com
-      answer: 192.168.1.3
-      enabled: true
     - domain: lab.tailf2af36.ts.net
       answer: 192.168.0.206
       enabled: true
-    - domain: vault.local
+    - domain: vault.lab
       answer: 192.168.0.206
       enabled: true
-    - domain: vault.lab
+    - domain: lab.lan
       answer: 192.168.0.206
       enabled: true
     - domain: adguardhome.lab
@@ -209,7 +184,7 @@ filtering:
       answer: 192.168.0.206
       enabled: true
   safe_fs_patterns:
-    - /var/lib/adguardhome/userfilters/*
+    - /opt/adguardhome/work/userfilters/*
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576
@@ -218,7 +193,7 @@ filtering:
   blocked_response_ttl: 10
   filtering_enabled: true
   rewrites_enabled: true
-  parental_enabled: false
+  parental_enabled: true
   safebrowsing_enabled: true
   protection_enabled: true
 clients:
@@ -228,37 +203,9 @@ clients:
     rdns: true
     dhcp: true
     hosts: true
-  persistent:
-    - safe_search:
-        enabled: true
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: UTC
-        ids: []
-      name: 'Client fd75:a7ec:e875::'
-      ids:
-        - 'fd75:a7ec:e875::'
-      tags: []
-      upstreams: []
-      uid: 019e4ae6-00de-7b0a-a9db-82943d9fb843
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
+  persistent: []
 log:
-  enabled: true
+  enabled: false
   file: ""
   max_backups: 0
   max_size: 100
