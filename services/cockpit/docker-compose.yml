@@ -1,0 +1,26 @@
+# Cockpit is installed as a system package, not Docker.
+# It runs via systemd socket activation on port 9090.
+#
+#   systemctl status cockpit.socket
+#   systemctl status cockpit.service
+#
+# To update: apt update && apt upgrade cockpit
+# (handled automatically by system's unattended-upgrades)
+
+services:
+  cockpit:
+    image: cockpit/ws:latest
+    container_name: cockpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9091:9090"
+    volumes:
+      - /run/cockpit:/run/cockpit:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /:/host:ro
+    privileged: true
+    stop_signal: SIGKILL
+
+# Note: The system package (cockpit-ws) is currently used instead of Docker.
+# This compose file is provided as an alternative if you prefer containerized.
+# For now, Cockpit is managed via apt on the host.

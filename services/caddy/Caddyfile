@@ -29,3 +29,10 @@ lab.tailf2af36.ts.net {
         header_up Connection {http.request.header.Connection}
     }
 }
+
+cockpit.lab {
+    bind 192.168.0.206
+    tls /etc/caddy/certs/lab.tailf2af36.ts.net.crt /etc/caddy/certs/lab.tailf2af36.ts.net.key
+
+    reverse_proxy http://127.0.0.1:9090
+}

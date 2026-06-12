@@ -50,6 +50,11 @@ will be happy to do so.
         <td>Watchtower</td>
         <td>Automated container updates on a schedule (daily at 2 AM)</td>
     </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cockpit.svg" width="32" /></td>
+        <td>Cockpit</td>
+        <td>Web-based server management console (system package, port 9090)</td>
+    </tr>
 </table>
 
 <h2>🔐 Security & Passwords</h2>
@@ -121,6 +126,7 @@ will be happy to do so.
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
 | Portainer | 9000 | `portainer_default` | Auto |
 | Watchtower | 8080 (API) | `watchtower_default` | Auto |
+| Cockpit | 9090 | Host (systemd) | Built-in |
 
 ---
 
@@ -147,6 +153,9 @@ cd ../caddy && docker compose up -d
 cd ../vaultwarden && docker compose up -d
 cd ../portainer && docker compose up -d
 cd ../watchtower && docker compose up -d
+
+# Cockpit runs as a system package (not Docker)
+# sudo systemctl enable --now cockpit.socket
 ```
 
 ### Individual Service Commands
@@ -180,13 +189,15 @@ homelab/
 ├── services/
 │   ├── adguardhome/
 │   │   ├── docker-compose.yml
-│   │   └── AdGuardHome.yaml          # Main config (sync from /home/homeserver/AdGuardHome.yaml)
+│   │   └── AdGuardHome.yaml              # Main config (sync from running container)
 │   ├── caddy/
 │   │   ├── docker-compose.yml
-│   │   └── Caddyfile                 # Reverse proxy config
+│   │   └── Caddyfile                     # Reverse proxy config
+│   ├── cockpit/
+│   │   └── docker-compose.yml            # Docker alternative (system package preferred)
 │   ├── vaultwarden/
 │   │   ├── docker-compose.yml
-│   │   └── .env.example              # Template for secrets
+│   │   └── .env.example                  # Template for secrets
 │   ├── portainer/
 │   │   └── docker-compose.yml
 │   └── watchtower/
