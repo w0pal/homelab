@@ -257,9 +257,7 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ## Hardware
 
-Device specs:
-
-- **ZTE B860H** (this homeserver)
+- **ZTE B860H** (homeserver)
   ```
   OS: Armbian 26.5.1 trixie aarch64
   Kernel: Linux 6.12.91-ophub
@@ -267,6 +265,13 @@ Device specs:
   GPU: Amlogic meson-gxl-mali [Integrated]
   RAM: 1.75 GiB
   Storage: 58.24 GiB (SD) + 6.47 GiB (eMMC)
+  ```
+
+- **OpenWrt** (router @ 192.168.0.1)
+  ```
+  OS: OpenWrt
+  Role: Gateway, DHCP, NAT
+  Network: 192.168.0.0/24 LAN
   ```
 
 ---
