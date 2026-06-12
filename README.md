@@ -257,10 +257,20 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ## Hardware
 
-- **Server**: Orange Pi 5 / ARM64 (or similar SBC)
-- **OS**: Ubuntu/Debian ARM64
-- **Network**: OpenWrt router (192.168.0.1) → AdGuard Home (192.168.0.206)
-- **Remote**: Tailscale MagicDNS + HTTPS via `tailscale serve`
+```
+OS: Armbian 26.5.1 trixie aarch64
+Host: ZTE B860H
+Kernel: Linux 6.12.91-ophub
+Packages: 186 (brew), 1036 (dpkg)
+Shell: zsh 5.9
+Display: 1920x1080 @ 60Hz [External]
+CPU: p212 (4) @ 1.51 GHz
+GPU: Amlogic meson-gxl-mali [Integrated]
+Memory: 1.75 GiB
+Swap: 2.81 GiB
+Disk: 58.24 GiB (ext4) + 6.47 GiB (ext4)
+Network: wlan0 (192.168.0.206/24)
+```
 
 ---
 
