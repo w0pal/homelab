@@ -12,8 +12,8 @@ http:
   address: 0.0.0.0:3000
   session_ttl: 30d
 users:
-  - name: openwrt
-    password: $2a$10$20rS4BquJZIZ62QCsL2ZrerfYu4EOm3M5NwwT8cH.ToNejNAZvkqi
+  - name: admin
+    password: $2a$10$9aCTakprX8MxqUtCWtkowuAcNn4qwYa5Vxw42fdTxlsW4Ql.IU0j2
 auth_attempts: 5
 block_auth_min: 15
 http_proxy: ""
