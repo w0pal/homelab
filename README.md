@@ -1,9 +1,9 @@
 # My Homelab
 
-This repository is where I keep the GitOps configuration for my homelab. I use
-it as a place to run the software I build, try out new tools, and automate
-parts of my daily life. It is mostly a hobby project, but it also helps me
-learn more about DevOps and cloud-native practices in a practical way.
+This repository contains the GitOps configuration for my personal homeserver.
+This is purely a **hobby project** — it runs services for fun and personal
+convenience (media, passwords, network tools), not for development, production,
+or anything serious. I tinker with it in my free time.
 
 I don't aim for perfection here (seriously). Things will change often as I experiment and
 figure out better ways to manage this. This repo works both as
@@ -12,7 +12,8 @@ find something useful, feel free to use it in your own projects.
 
 The setup includes a mix of media services, personal productivity tools, and
 infrastructure components. Some are for fun, some are for convenience, and
-others are just experiments.
+others are just experiments. Nothing here is production-grade — it's just my
+weekend project.
 
 Feel free to explore and see how everything is set up. If you have any
 questions or suggestions, you can reach out to me on GitHub (w0pal). If I can help you with something, I
@@ -254,7 +255,12 @@ Template files (`.env.example`) show required variables.
 
 - [walkxcode/dashboard-icons](https://github.com/walkxcode/dashboard-icons) for service icons
 - [Renovate](https://github.com/renovatebot/renovate) for automated dependency updates
+- [renovate[bot]](https://github.com/apps/renovate) for automated dependency updates
 - The self-hosted community for inspiration
+
+---
+
+*Purely a hobby. Not production. Just fun.*
 
 ---
 
