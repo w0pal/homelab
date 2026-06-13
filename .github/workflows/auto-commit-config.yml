@@ -36,6 +36,23 @@ jobs:
         run: |
           cp /home/homeserver/caddy/docker-compose.yml services/caddy/docker-compose.yml
 
+      - name: Sync Dockge docker-compose
+        run: |
+          cp /home/homeserver/dockge/docker-compose.yml services/dockge/docker-compose.yml
+
+      - name: Sync ZSH config
+        run: |
+          cp /home/homeserver/.zshrc configs/zsh/.zshrc
+          cp -r /home/homeserver/.config/zsh/* configs/zsh/
+
+      - name: Sync Neovim config
+        run: |
+          cp -r /home/homeserver/.config/nvim/* configs/nvim/
+
+      - name: Update README timestamp
+        run: |
+          sed -i "s/\*Last updated: .*\*/*Last updated: $(date +%Y-%m-%d)*/" README.md
+
       - name: Check for changes
         id: changes
         run: |

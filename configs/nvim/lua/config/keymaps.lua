@@ -1,0 +1,1 @@
+-- Keep Vim/Neovim default keymaps. Add personal mappings here only when wanted.

@@ -1,0 +1,93 @@
+# --- FUNCTIONS ---
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  [ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+  rm -f -- "$tmp"
+}
+
+_zsh_editor() {
+  emulate -L zsh
+  local -a editor_cmd
+
+  if [[ -n ${EDITOR:-} ]]; then
+    editor_cmd=(${(z)EDITOR})
+    if (( $#editor_cmd && $+commands[$editor_cmd[1]] )); then
+      print -r -- "$EDITOR"
+      return 0
+    fi
+  fi
+
+  for editor_cmd in nvim vim vi nano; do
+    if (( $+commands[$editor_cmd] )); then
+      print -r -- "$editor_cmd"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+_open_in_zsh_editor() {
+  emulate -L zsh
+  local editor=$(_zsh_editor)
+  local -a editor_cmd
+
+  if [[ -z $editor ]]; then
+    print -u2 "No editor found. Install nvim, vim, vi, or nano."
+    return 127
+  fi
+
+  editor_cmd=(${(z)editor})
+  command "${editor_cmd[@]}" "$1"
+}
+
+_edit_zsh_config_file() {
+  _open_in_zsh_editor "$ZSH_CONFIG_DIR/$1"
+}
+
+function config() {
+  case "$1" in
+    ""|-h|--help|help)
+      cat <<'EOF'
+Zsh config commands:
+  config                 Show this help
+  config --help          Show this help
+  config-dir             Go to ~/.config/zsh
+  reload                 Reload ~/.zshrc
+  zshcfg                 Run git for the zsh config repo
+  zshlg                  Open lazygit for the zsh config repo
+
+Config files:
+  config/zshrc           Edit ~/.zshrc
+  config/environment     Edit ~/.config/zsh/environment
+  config/tools           Edit ~/.config/zsh/tools
+  config/completion      Edit ~/.config/zsh/completion
+  config/history         Edit ~/.config/zsh/history
+  config/alias           Edit ~/.config/zsh/alias
+  config/function        Edit ~/.config/zsh/function
+  config/keybindings     Edit ~/.config/zsh/keybindings
+  config/external        Edit ~/.config/zsh/external
+  config/theme           Edit ~/.config/zsh/theme
+EOF
+      ;;
+    *)
+      print -u2 "Unknown config command: $1"
+      print -u2 "Run 'config --help' to see available commands."
+      return 2
+      ;;
+  esac
+}
+
+function config/zshrc() { _open_in_zsh_editor "$HOME/.zshrc"; }
+function config-dir() { cd "$ZSH_CONFIG_DIR"; }
+function config/environment() { _edit_zsh_config_file environment; }
+function config/tools() { _edit_zsh_config_file tools; }
+function config/completion() { _edit_zsh_config_file completion; }
+function config/history() { _edit_zsh_config_file history; }
+function config/alias() { _edit_zsh_config_file alias; }
+function config/function() { _edit_zsh_config_file function; }
+function config/keybindings() { _edit_zsh_config_file keybindings; }
+function config/external() { _edit_zsh_config_file external; }
+function config/theme() { _edit_zsh_config_file theme; }

@@ -7,11 +7,10 @@
     auto_https off
 }
 
-lab.tailf2af36.ts.net {
-    bind 192.168.0.206
-    tls /etc/caddy/certs/lab.tailf2af36.ts.net.crt /etc/caddy/certs/lab.tailf2af36.ts.net.key
+lab.tailf2af36.ts.net:443 {
+    tls /certs/lab.tailf2af36.ts.net.crt /certs/lab.tailf2af36.ts.net.key
 
-    reverse_proxy http://127.0.0.1:8080 {
+    reverse_proxy http://vaultwarden:80 {
         header_up Host {http.request.host}
         header_up X-Real-IP {http.request.remote.host}
         header_up X-Forwarded-For {http.request.remote.host}
@@ -23,16 +22,19 @@ lab.tailf2af36.ts.net {
         header Connection *Upgrade*
         header Upgrade websocket
     }
-    reverse_proxy @websocket http://127.0.0.1:8080 {
+    reverse_proxy @websocket http://vaultwarden:80 {
         header_up Host {http.request.host}
         header_up Upgrade {http.request.header.Upgrade}
         header_up Connection {http.request.header.Connection}
     }
 }
 
-cockpit.lab {
-    bind 192.168.0.206
-    tls /etc/caddy/certs/lab.tailf2af36.ts.net.crt /etc/caddy/certs/lab.tailf2af36.ts.net.key
+dockge.lab:80 {
+    reverse_proxy http://dockge:5001
+}
 
-    reverse_proxy http://127.0.0.1:9090
+cockpit.lab:443 {
+    tls /certs/lab.tailf2af36.ts.net.crt /certs/lab.tailf2af36.ts.net.key
+
+    reverse_proxy http://192.168.0.206:9090
 }

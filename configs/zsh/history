@@ -1,0 +1,30 @@
+# --- HISTORY ---
+HISTSIZE=10000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups inc_append_history
+setopt hist_expire_dups_first hist_find_no_dups hist_reduce_blanks
+setopt correct
+
+# Do not save likely command typos, such as unknown first commands.
+autoload -Uz add-zsh-hook
+_history_ignore_unknown_command() {
+  emulate -L zsh
+  local -a words
+  local command_word
+
+  words=(${(z)1})
+  while (( $#words )); do
+    command_word="${words[1]}"
+    shift words
+    [[ "$command_word" == *=* ]] && continue
+    [[ "$command_word" == command || "$command_word" == builtin || "$command_word" == exec || "$command_word" == noglob ]] && continue
+    break
+  done
+
+  [[ -z "$command_word" ]] && return 0
+  [[ "$command_word" == */* ]] && [[ ! -x "$command_word" ]] && return 1
+  [[ "$command_word" != */* ]] && ! whence -w -- "$command_word" >/dev/null 2>&1 && return 1
+  return 0
+}
+add-zsh-hook zshaddhistory _history_ignore_unknown_command

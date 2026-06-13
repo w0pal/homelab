@@ -1,0 +1,41 @@
+# --- EXTERNAL SOURCES ---
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+[ -f "$HOME/.local/share/../bin/env" ] && . "$HOME/.local/share/../bin/env"
+
+# Distrobox check
+if [ -n "$CONTAINER_ID" ]; then
+  export TERM=xterm-256color
+fi
+
+# ============================================================================
+# TMUX AUTO-START WITH SINGLE "home" SESSION + MOTD
+# Works for: local terminal, SSH, Cockpit/web terminal
+# ============================================================================
+
+# Only run in interactive shells, not already in tmux, and tmux is available
+if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && (( $+commands[tmux] )); then
+
+  # Function to run MOTD scripts and start zsh
+  _tmux_new_session_with_motd() {
+    local session_name="${1:-home}"
+    # run-parts executes all scripts in /etc/update-motd.d/ in order
+    # then starts interactive zsh inside the tmux session
+    tmux new-session -s "$session_name" "run-parts /etc/update-motd.d/; zsh -i"
+  }
+
+  # Check if "home" session already exists
+  if tmux has-session -t home 2>/dev/null; then
+    # Session exists - attach to it (preserves existing windows/panes)
+    tmux attach-session -t home
+  else
+    # No "home" session - create new one with MOTD, then interactive zsh
+    _tmux_new_session_with_motd home
+  fi
+
+  # Exit the outer shell (SSH connection or login shell) when tmux exits
+  # This prevents falling back to a bare shell outside tmux
+  exit
+
+fi
+
+# If somehow we reach here without tmux (e.g., tmux not installed), continue normally

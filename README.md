@@ -41,8 +41,8 @@ will be happy to do so.
         <td>Reverse proxy with automatic HTTPS (using Tailscale certs) for LAN access to services</td>
     </tr>
     <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/portainer.svg" width="32" /></td>
-        <td>Portainer</td>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/dockge.svg" width="32" /></td>
+        <td>Dockge</td>
         <td>Docker container management UI for easy service administration</td>
     </tr>
     <tr>
@@ -98,23 +98,21 @@ will be happy to do so.
 ┌─────────────────────────────────────────────────────────────┐
 │                      Caddy (Reverse Proxy)                   │
 │  • TLS termination (Tailscale certs for lab.tailf2af36.ts.net)│
-│  • Routes to Vaultwarden on 127.0.0.1:8080                   │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-┌───────────────────────┐     ┌───────────────────────┐
-│    Vaultwarden        │     │   AdGuard Home        │
-│    (Port 8080)        │     │   (Port 53/3000)      │
-└───────────────────────┘     └───────────────────────┘
-              │                           │
-              ▼                           ▼
-     ┌─────────────────┐         ┌─────────────────┐
-     │  vw-data volume │         │  DNS rewrites:  │
-     │  (persistent)   │         │  • vault.local  │
-     └─────────────────┘         │  • lab.tail...  │
-                                 │  • router.test  │
-                                 └─────────────────┘
+│  • Routes to Vaultwarden, Dockge, Cockpit                    │
+└───────┬─────────────────────────────────┬───────────────────┘
+        │                                 │
+        ▼                                 ▼
+┌───────────────────┐         ┌───────────────────────┐
+│   Vaultwarden     │         │      Dockge           │
+│    (internal)     │         │  docker container     │
+│  vaultwarden:80   │         │  management UI        │
+└───────────────────┘         │    dockge:5001        │
+        │                     └───────────────────────┘
+        ▼                                   
+┌─────────────────┐                 
+│  vw-data volume │                 
+│  (persistent)   │                 
+└─────────────────┘                 
 ```
 
 ## Service Details
@@ -124,7 +122,7 @@ will be happy to do so.
 | AdGuard Home | 53 (DNS), 3000 (Web) | `lsio` (host) | Built-in |
 | Caddy | 80, 443 | `shared-web` | Auto |
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
-| Portainer | 9000 | `portainer_default` | Auto |
+| Dockge | 5001 | `shared-web` | Auto |
 | Watchtower | 8080 (API) | `watchtower_default` | Auto |
 | Cockpit | 9090 | Host (systemd) | Built-in |
 
@@ -151,7 +149,7 @@ docker network create shared-web
 cd services/adguardhome && docker compose up -d
 cd ../caddy && docker compose up -d
 cd ../vaultwarden && docker compose up -d
-cd ../portainer && docker compose up -d
+cd ../dockge && docker compose up -d
 cd ../watchtower && docker compose up -d
 
 # Cockpit runs as a system package (not Docker)
@@ -173,6 +171,10 @@ docker compose up -d
 
 # Caddy (reverse proxy)
 cd services/caddy
+docker compose up -d
+
+# Dockge (container manager)
+cd services/dockge
 docker compose up -d
 
 # Watchtower (auto-updates)
@@ -198,7 +200,7 @@ homelab/
 │   ├── vaultwarden/
 │   │   ├── docker-compose.yml
 │   │   └── .env.example                  # Template for secrets
-│   ├── portainer/
+│   ├── dockge/
 │   │   └── docker-compose.yml
 │   └── watchtower/
 │       └── docker-compose.yml

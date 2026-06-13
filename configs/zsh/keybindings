@@ -1,0 +1,17 @@
+# --- KEYBINDINGS ---
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey "^[[1;5C" forward-word    # Ctrl + Right
+bindkey "^[[1;5D" backward-word   # Ctrl + Left
+bindkey "^[[1;3C" forward-word    # Alt + Right
+bindkey "^[[1;3D" backward-word   # Alt + Left
+bindkey "^[^?" vi-backward-kill-word   # Alt + Backspace
+bindkey "^[^H" vi-backward-kill-word   # Alt + Backspace fallback
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+bindkey "^[OA" up-line-or-beginning-search
+bindkey "^[OB" down-line-or-beginning-search
+bindkey "^[[Z" reverse-menu-complete
+bindkey "^X^P" predict-toggle

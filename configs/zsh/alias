@@ -1,0 +1,21 @@
+# --- ALIASES ---
+if (( $+commands[eza] )); then
+  alias ls="eza --icons"
+elif ls --color=auto -d . >/dev/null 2>&1; then
+  alias ls="ls --color=auto"
+elif ls -G -d . >/dev/null 2>&1; then
+  alias ls="ls -G"
+fi
+
+alias ll='ls -lh'
+alias la='ls -lha'
+alias l='ls -lF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias reload="source ~/.zshrc"
+alias ssh='TERM=xterm-256color ssh'
+alias dev-image="distrobox enter dev-image"
+alias v='nvim'
+alias zshcfg='git --git-dir=$HOME/.zsh-config.git --work-tree=$HOME'
+alias zshlg='lazygit --git-dir=$HOME/.zsh-config.git --work-tree=$HOME'

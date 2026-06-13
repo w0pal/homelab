@@ -1,0 +1,136 @@
+# --- THEME (LOAD LAST) ---
+# Ditatompel prompt created by Christian Ditaputratama for 5.9
+
+autoload -Uz vcs_info
+zmodload -i zsh/datetime
+
+# VCS
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
+zstyle ':vcs_info:*' stagedstr '%F{yellow}+%f'
+zstyle ':vcs_info:git:*' formats ' [%b]%u%c'
+zstyle ':vcs_info:git:*' actionformats ' (%b|%a%u%c)'
+
+# Functions
+_prompt_now_ms() {
+  printf '%.0f' $(( EPOCHREALTIME * 1000 ))
+}
+
+_prompt_container_name() {
+  local name key value
+
+  if [[ -n ${DISTROBOX_NAME:-} ]]; then
+    name=$DISTROBOX_NAME
+  elif [[ -n ${CONTAINER_NAME:-} ]]; then
+    name=$CONTAINER_NAME
+  elif [[ -n ${CONTAINER_ID:-} ]]; then
+    name=$CONTAINER_ID
+  elif [[ -n ${container:-} && ${container:l} != "0" && ${container:l} != "false" ]]; then
+    name=${HOSTNAME:-${(%):-%m}}
+  fi
+
+  if [[ -z $name && -r /run/.containerenv ]]; then
+    while IFS='=' read -r key value; do
+      [[ $key == name ]] || continue
+      name=${value%\"}
+      name=${name#\"}
+      name=${name%\'}
+      name=${name#\'}
+      break
+    done < /run/.containerenv
+  fi
+
+  if [[ -z $name && -e /.dockerenv ]]; then
+    name=${HOSTNAME:-${(%):-%m}}
+  fi
+
+  [[ -n $name ]] && printf '%s' "${name//\%/%%}"
+}
+
+_prompt_cwd() {
+  emulate -L zsh
+  local cwd_path=${1:-$PWD}
+  local max_parts=${PROMPT_CWD_MAX_PARTS:-3}
+  local max_len=${PROMPT_CWD_MAX_LEN:-35}
+  local prefix=""
+  local formatted
+  local -a parts kept
+
+  if [[ $cwd_path == $HOME ]]; then
+    cwd_path="~"
+  elif [[ $cwd_path == "$HOME/"* ]]; then
+    cwd_path="~/${cwd_path#$HOME/}"
+  fi
+
+  (( ${#cwd_path} <= max_len )) && print -r -- "${cwd_path//\%/%%}" && return
+
+  if [[ $cwd_path == "~" ]]; then
+    print -r -- "~"
+    return
+  elif [[ $cwd_path == "~/"* ]]; then
+    prefix="~/"
+    cwd_path=${cwd_path#\~/}
+  elif [[ $cwd_path == "/"* ]]; then
+    prefix="/"
+    cwd_path=${cwd_path#/}
+  fi
+
+  parts=(${(s:/:)cwd_path})
+
+  if (( $#parts <= max_parts )); then
+    print -r -- "${prefix}${cwd_path//\%/%%}"
+    return
+  fi
+
+  kept=("${parts[@]: -$max_parts}")
+  formatted="${(j:/:)kept}"
+
+  print -r -- "${formatted//\%/%%}"
+}
+
+preexec() {
+  timer=$(_prompt_now_ms)
+}
+
+precmd() {
+  vcs_info
+
+  # Exec time
+  # See https://gist.github.com/knadh/123bca5cfdae8645db750bfb49cb44
+  if [ $timer ]; then
+    local now=$(_prompt_now_ms)
+    local d_ms=$(($now-$timer))
+    local d_s=$((d_ms / 1000))
+    local ms=$((d_ms % 1000))
+    local s=$((d_s % 60))
+    local m=$(((d_s / 60) % 60))
+    local h=$((d_s / 3600))
+    local elapsed=""
+    if ((h > 0)); then elapsed=${h}h${m}m
+    elif ((m > 0)); then elapsed=${m}m${s}s
+    elif ((s >= 10)); then elapsed=${s}.$((ms / 100))s
+    elif ((s > 0)); then elapsed=${s}.$((ms / 10))s
+    else elapsed=${ms}ms
+    fi
+    unset timer
+  fi
+
+  USER_FMT="%F{green}%n%f"
+  if [ "$(id -u)" -eq 0 ]; then
+    USER_FMT="%F{red}%n%f"
+  fi
+
+  local HOST_FMT="%F{cyan}%m%k"
+  local CONTAINER_FMT=""
+  local CONTAINER_PROMPT_NAME=$(_prompt_container_name)
+  if [[ -n $CONTAINER_PROMPT_NAME ]]; then
+    CONTAINER_FMT=" %F{magenta}[${CONTAINER_PROMPT_NAME}]%k"
+  fi
+
+  local CWD_FMT=$(_prompt_cwd)
+
+  PS1="%B${USER_FMT}@${HOST_FMT}${CONTAINER_FMT} %(?.%F{green}√.%F{red}?%?)%f %F{yellow}${elapsed}%f %B%F{blue}${CWD_FMT}%b%f%k${vcs_info_msg_0_} "$'\n'"%# "
+}
+
+# vim: set ts=2 sw=2 et:

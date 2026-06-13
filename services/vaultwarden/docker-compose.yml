@@ -13,7 +13,7 @@ services:
       - LOG_LEVEL=info
       - EXTENDED_LOGGING=true
     volumes:
-      - ./vw-data:/data
+      - /home/homeserver/vaultwarden/vw-data:/data
     ports:
       - "127.0.0.1:8080:80"
     networks:

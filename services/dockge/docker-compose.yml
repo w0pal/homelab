@@ -1,0 +1,22 @@
+services:
+  dockge:
+    image: louislam/dockge:latest
+    container_name: dockge
+    restart: always
+    ports:
+      - "5001:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockge_data:/app/data
+      - /home/homeserver/dockge/stacks:/home/homeserver/dockge/stacks
+    networks:
+      - shared-web
+    environment:
+      - DOCKGE_STACKS_DIR=/home/homeserver/dockge/stacks
+
+volumes:
+  dockge_data:
+
+networks:
+  shared-web:
+    external: true

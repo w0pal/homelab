@@ -53,7 +53,7 @@
         "/^vaultwarden/server$/",
         "/^caddy$/",
         "/^adguard/adguardhome$/",
-        "/^portainer/portainer-ce$/",
+        "/^louislam/dockge$/",
         "/^containrrr/watchtower$/"
       ]
     }

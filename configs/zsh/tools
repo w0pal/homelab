@@ -1,0 +1,283 @@
+# --- TOOLS ---
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init --cmd cd zsh)"
+fi
+
+if (( $+commands[fzf] )) && [[ -o interactive && -o zle && -t 0 && -t 1 ]]; then
+  source <(fzf --zsh)
+  if (( $+widgets[fzf-history-widget] )); then
+    bindkey -M emacs '\er' fzf-history-widget
+    bindkey -M viins '\er' fzf-history-widget
+    bindkey -M vicmd '\er' fzf-history-widget
+  fi
+fi
+
+_zsh_prompt_highlight_command() {
+  emulate -L zsh
+  local word=$1
+
+  [[ -z $word ]] && return 1
+  [[ $word == *=* && $word != */* ]] && return 2
+  [[ $word == */* ]] && [[ -x ${~word} ]] && return 0
+  whence -w -- "$word" >/dev/null 2>&1
+}
+
+_zsh_prompt_syntax_highlight() {
+  emulate -L zsh
+  setopt extendedglob
+
+  region_highlight=()
+
+  local len=${#BUFFER}
+  local i=1 start end char quote word style expect_command=1 command_status
+  local -a wrappers=(command builtin exec sudo doas env noglob)
+
+  while (( i <= len )); do
+    char=${BUFFER[i]}
+
+    if [[ $char == [[:space:]] ]]; then
+      (( i++ ))
+      continue
+    fi
+
+    if [[ $char == "#" ]]; then
+      region_highlight+=("$(( i - 1 )) $len fg=245")
+      break
+    fi
+
+    if [[ $char == [\'\"] ]]; then
+      quote=$char
+      start=$i
+      (( i++ ))
+      while (( i <= len )); do
+        [[ ${BUFFER[i]} == "\\" && $quote == \" ]] && (( i += 2 )) && continue
+        [[ ${BUFFER[i]} == $quote ]] && (( i++ )) && break
+        (( i++ ))
+      done
+      region_highlight+=("$(( start - 1 )) $(( i - 1 )) fg=220")
+      continue
+    fi
+
+    if [[ $char == [\;\|\&] ]]; then
+      start=$i
+      while (( i <= len )) && [[ ${BUFFER[i]} == [\;\|\&] ]]; do
+        (( i++ ))
+      done
+      region_highlight+=("$(( start - 1 )) $(( i - 1 )) fg=245,bold")
+      expect_command=1
+      continue
+    fi
+
+    start=$i
+    while (( i <= len )); do
+      char=${BUFFER[i]}
+      [[ $char == [[:space:]\;\|\&] ]] && break
+      (( i++ ))
+    done
+    end=$(( i - 1 ))
+    word=${BUFFER[start,end]}
+
+    if (( expect_command )); then
+      _zsh_prompt_highlight_command "$word"
+      command_status=$?
+
+      if (( command_status == 2 )); then
+        region_highlight+=("$(( start - 1 )) $end fg=111")
+        continue
+      elif (( command_status == 0 )); then
+        region_highlight+=("$(( start - 1 )) $end fg=114,bold")
+      else
+        region_highlight+=("$(( start - 1 )) $end fg=203,bold")
+      fi
+
+      if (( ${wrappers[(Ie)$word]} )); then
+        expect_command=1
+      else
+        expect_command=0
+      fi
+    elif [[ $word == --* || $word == -* ]]; then
+      region_highlight+=("$(( start - 1 )) $end fg=81")
+    elif [[ -e ${~word} ]]; then
+      if [[ -d ${~word} ]]; then
+        style="fg=75,underline"
+      else
+        style="fg=75"
+      fi
+      region_highlight+=("$(( start - 1 )) $end $style")
+    fi
+  done
+}
+
+if [[ -o interactive && -o zle ]]; then
+  autoload -Uz add-zle-hook-widget
+  add-zle-hook-widget line-pre-redraw _zsh_prompt_syntax_highlight
+fi
+
+_history_fuzzy_match() {
+  emulate -L zsh
+  local text=${1:l}
+  local query=${2:l}
+  local token char rest idx pos
+
+  [[ -z $query ]] && return 0
+
+  for token in ${(z)query}; do
+    pos=1
+    for char in ${(s::)token}; do
+      rest=${text[pos,-1]}
+      idx=${rest[(i)${(b)char}]}
+      (( idx <= ${#rest} )) || return 1
+      (( pos += idx ))
+    done
+  done
+}
+
+_history_entries() {
+  emulate -L zsh
+  setopt extendedglob
+  local line cmd
+  local -A seen
+
+  for line in "${(@f)$(fc -rl 1 2>/dev/null)}"; do
+    cmd=${line##[[:space:]]#<->[*[:space:]]#}
+    [[ -n $cmd && -z ${seen[$cmd]} ]] || continue
+    seen[$cmd]=1
+    print -r -- "$cmd"
+  done
+}
+
+_history_search_widget() {
+  emulate -L zsh
+  setopt extendedglob no_beep
+
+  [[ -t 0 && -t 1 ]] || return 0
+
+  local -a entries matches
+  local query=$LBUFFER
+  local key next third cmd chosen line prefix
+  local selected=1 offset=0 max_rows row idx width
+
+  entries=("${(@f)$(_history_entries)}")
+  zle -I
+  print -n -- $'\e[?1049h\e[?25l' > /dev/tty
+
+  while true; do
+    matches=()
+    for cmd in $entries; do
+      _history_fuzzy_match "$cmd" "$query" || continue
+      matches+=("$cmd")
+    done
+
+    (( selected < 1 )) && selected=1
+    if (( $#matches == 0 )); then
+      selected=1
+      offset=0
+    elif (( selected > $#matches )); then
+      selected=$#matches
+    fi
+
+    max_rows=$(( LINES - 5 ))
+    (( max_rows < 5 )) && max_rows=5
+    (( selected <= offset )) && offset=$(( selected - 1 ))
+    (( selected > offset + max_rows )) && offset=$(( selected - max_rows ))
+    (( offset < 0 )) && offset=0
+    width=$(( COLUMNS - 4 ))
+    (( width < 20 )) && width=20
+
+    print -n -- $'\e[H\e[2J' > /dev/tty
+    print -r -- "history search: $query" > /dev/tty
+    print -r -- "enter select  esc cancel  backspace edit  ctrl-u clear" > /dev/tty
+    print -r -- "" > /dev/tty
+
+    if (( $#matches == 0 )); then
+      print -r -- "  no match" > /dev/tty
+    else
+      for row in {1..$max_rows}; do
+        idx=$(( offset + row ))
+        (( idx > $#matches )) && break
+        line=${matches[$idx]//$'\n'/ }
+        line=${line[1,$width]}
+        if (( idx == selected )); then
+          prefix="> "
+          print -r -- $'\e[7m'"${prefix}${line}"$'\e[0m' > /dev/tty
+        else
+          prefix="  "
+          print -r -- "${prefix}${line}" > /dev/tty
+        fi
+      done
+    fi
+
+    IFS= read -rs -k 1 key < /dev/tty || break
+    case $key in
+      ($'\r'|$'\n')
+        (( $#matches )) && chosen=${matches[$selected]}
+        break
+        ;;
+      ($'\e')
+        if IFS= read -rs -k 1 -t 0.02 next < /dev/tty; then
+          if [[ $next == "[" ]]; then
+            IFS= read -rs -k 1 -t 0.02 third < /dev/tty || third=""
+            case $third in
+              A) (( selected-- )) ;;
+              B) (( selected++ )) ;;
+            esac
+          fi
+        else
+          break
+        fi
+        ;;
+      ($'\177'|$'\b')
+        (( ${#query} )) && query=${query[1,-2]}
+        selected=1
+        offset=0
+        ;;
+      ($'\025')
+        query=""
+        selected=1
+        offset=0
+        ;;
+      ($'\016')
+        (( selected++ ))
+        ;;
+      ($'\020')
+        (( selected-- ))
+        ;;
+      (*)
+        if [[ $key == [[:print:]] ]]; then
+          query+=$key
+          selected=1
+          offset=0
+        fi
+        ;;
+    esac
+  done
+
+  print -n -- $'\e[?25h\e[?1049l' > /dev/tty
+
+  if [[ -n $chosen ]]; then
+    BUFFER=$chosen
+    CURSOR=${#BUFFER}
+  fi
+  zle reset-prompt
+}
+
+if (( ! $+commands[fzf] )) && [[ -o interactive && -o zle ]]; then
+  zle -N history-search-widget _history_search_widget
+  bindkey -M emacs '\er' history-search-widget
+  bindkey -M viins '\er' history-search-widget
+  bindkey -M vicmd '\er' history-search-widget
+fi
+
+# Lazy load nvm without a framework or plugin manager
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+_load_nvm() {
+  unfunction nvm node npm npx pnpm yarn 2>/dev/null
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+  [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+}
+nvm() { _load_nvm; nvm "$@"; }
+node() { _load_nvm; command node "$@"; }
+npm() { _load_nvm; command npm "$@"; }
+npx() { _load_nvm; command npx "$@"; }
+pnpm() { _load_nvm; command pnpm "$@"; }
+yarn() { _load_nvm; command yarn "$@"; }

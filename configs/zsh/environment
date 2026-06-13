@@ -1,0 +1,22 @@
+# --- PATHS & ENVIRONMENT ---
+export SDKMAN_DIR="$HOME/.sdkman"
+export FLYCTL_INSTALL="/home/naufal/.fly"
+
+# Combine PATH exports for speed
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.sdkman/bin:$HOME/.nexus/bin:$HOME/.cargo/bin:$FLYCTL_INSTALL/bin:$HOME/.npm-global/bin:$PATH"
+
+# Added by Antigravity CLI installer
+export PATH="/var/home/w0pal/.local/bin:$PATH"
+
+export PATH=/home/homeserver/.opencode/bin:$PATH
+
+if (( $+commands[nvim] )); then
+  export EDITOR="nvim"
+elif (( $+commands[vim] )); then
+  export EDITOR="vim"
+elif (( $+commands[vi] )); then
+  export EDITOR="vi"
+elif (( $+commands[nano] )); then
+  export EDITOR="nano"
+fi
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

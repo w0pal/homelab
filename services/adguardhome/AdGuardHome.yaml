@@ -177,7 +177,7 @@ filtering:
     - domain: adguardhome.lab
       answer: 192.168.0.206
       enabled: true
-    - domain: portainer.lab
+    - domain: dockge.lab
       answer: 192.168.0.206
       enabled: true
     - domain: cockpit.lab
