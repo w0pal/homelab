@@ -291,4 +291,4 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ---
 
-*Last updated: $(date +%Y-%m-%d)*
+*Last updated: 2026-06-13*

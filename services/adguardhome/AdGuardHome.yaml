@@ -127,6 +127,9 @@ whitelist_filters: []
 user_rules:
   - '@@||www.pixiv.net^$important'
   - '@@||pixiv.net^$important'
+  - '@@||www.deviantart.com^$important'
+  - '@@||deviantart.com^$important'
+  - ""
 dhcp:
   enabled: false
   interface_name: wlan0
