@@ -48,7 +48,7 @@ will be happy to do so.
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/watchtower.svg" width="32" /></td>
         <td>Watchtower</td>
-        <td>Automated container updates on a schedule (daily at 2 AM)</td>
+        <td>Automated container updates on a schedule (Monthly at 2 AM)</td>
     </tr>
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cockpit.svg" width="32" /></td>
