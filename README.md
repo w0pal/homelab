@@ -53,7 +53,7 @@ will be happy to do so.
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cockpit.svg" width="32" /></td>
         <td>Cockpit</td>
-        <td>Web-based server management console (system package, port 9090)</td>
+        <td>Web-based server management console (Docker container, port 9090)</td>
     </tr>
 </table>
 
@@ -107,21 +107,20 @@ will be happy to do so.
 ┌─────────────────────────────────────────────────────────────┐
 │                    Internet / Tailscale                      │
 └───────────────────────────┬─────────────────────────────────┘
-                            │ HTTP (80) / HTTPS (443)
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│               Nginx Proxy Manager (Reverse Proxy)            │
-│  • Web UI for managing proxy hosts (port 81)                 │
-│  • Routes to Vaultwarden, Dockge, Cockpit, Uptime Kuma       │
-└───────┬──────────────────────────┬──────────────────────────┘
-        │                          │
-        ▼                          ▼
-┌──────────────────┐    ┌────────────────────────┐
-│   Vaultwarden    │    │        Dockge           │
-│   (internal)     │    │   docker container      │
-│ vaultwarden:80   │    │   management UI         │
-└──────────────────┘    │     dockge:5001         │
-                        └────────────────────────┘
+             │ HTTP (80) / HTTPS (443)
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│              Nginx Proxy Manager (Reverse Proxy)                  │
+│  • Web UI for managing proxy hosts (port 81)                      │
+│  • Routes to Vaultwarden, Dockge, Cockpit, Uptime Kuma            │
+└──────┬─────────────┬──────────────┬──────────────────┬───────────┘
+       │             │              │                  │
+       ▼             ▼              ▼                  ▼
+┌──────────┐  ┌──────────┐  ┌──────────┐       ┌──────────┐
+│Vaultwarden│  │  Dockge  │  │ Cockpit  │       │Uptime    │
+│(internal) │  │ container│  │ container│       │  Kuma    │
+│:80        │  │ :5001    │  │ :9090    │       │ :3001    │
+└──────────┘  └──────────┘  └──────────┘       └──────────┘
 ```
 
 ## Service Details
@@ -133,7 +132,7 @@ will be happy to do so.
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
 | Dockge | 5001 | `shared-web` | Auto |
 | Watchtower | N/A | `watchtower_default` | Auto |
-| Cockpit | 9090 | Host (systemd) | Built-in |
+| Cockpit | 9090 | `shared-web` | Built-in |
 | Uptime Kuma | 3001 | Host | Built-in |
 
 ---
@@ -160,10 +159,8 @@ cd services/adguardhome && docker compose up -d
 cd ../nginx-proxy-manager && docker compose up -d
 cd ../vaultwarden && docker compose up -d
 cd ../dockge && docker compose up -d
+cd ../cockpit && docker compose up -d
 cd ../watchtower && docker compose up -d
-
-# Cockpit runs as a system package (not Docker)
-# sudo systemctl enable --now cockpit.socket
 ```
 
 ### Individual Service Commands
@@ -185,6 +182,10 @@ docker compose up -d
 
 # Dockge (container manager)
 cd services/dockge
+docker compose up -d
+
+# Cockpit (web server management)
+cd services/cockpit
 docker compose up -d
 
 # Watchtower (auto-updates)
@@ -209,7 +210,7 @@ homelab/
 │   ├── nginx-proxy-manager/
 │   │   └── docker-compose.yml            # Reverse proxy with web UI
 │   ├── cockpit/
-│   │   └── docker-compose.yml            # Docker alternative (system package preferred)
+│   │   └── docker-compose.yml            # Web server management (Docker container)
 │   ├── vaultwarden/
 │   │   ├── docker-compose.yml
 │   │   └── .env.example                  # Template for secrets
@@ -249,7 +250,7 @@ Renovate runs on a schedule and groups related updates. Check `renovate.json` fo
 The `auto-commit-config.yml` workflow runs every 6 hours to pull configuration from the running homeserver and commit changes. This captures:
 
 - AdGuard Home YAML config changes
-- Docker Compose file updates (Nginx Proxy Manager, Dockge, Watchtower)
+- Docker Compose file updates (Nginx Proxy Manager, Dockge, Cockpit, Watchtower)
 - ZSH config changes
 - Neovim config changes
 - README timestamp updates
