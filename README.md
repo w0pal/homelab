@@ -36,9 +36,9 @@ will be happy to do so.
         <td>DNS-level ad and tracker blocker for your entire network with custom rewrites (vault.local, lab.tailf2af36.ts.net, etc.)</td>
     </tr>
     <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/caddy.svg" width="32" /></td>
-        <td>Caddy</td>
-        <td>Reverse proxy with automatic HTTPS (using Tailscale certs) for LAN access to services</td>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/nginx.svg" width="32" /></td>
+        <td>Nginx Proxy Manager</td>
+        <td>Reverse proxy with web UI for managing proxy hosts, SSL certificates, and access lists</td>
     </tr>
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/dockge.svg" width="32" /></td>
@@ -54,6 +54,20 @@ will be happy to do so.
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cockpit.svg" width="32" /></td>
         <td>Cockpit</td>
         <td>Web-based server management console (system package, port 9090)</td>
+    </tr>
+</table>
+
+<h2>📊 Monitoring</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/uptime-kuma.svg" width="32" /></td>
+        <td>Uptime Kuma</td>
+        <td>Uptime monitoring and status page for all services</td>
     </tr>
 </table>
 
@@ -93,26 +107,21 @@ will be happy to do so.
 ┌─────────────────────────────────────────────────────────────┐
 │                    Internet / Tailscale                      │
 └───────────────────────────┬─────────────────────────────────┘
-                            │ HTTPS (443)
+                            │ HTTP (80) / HTTPS (443)
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Caddy (Reverse Proxy)                   │
-│  • TLS termination (Tailscale certs for lab.tailf2af36.ts.net)│
-│  • Routes to Vaultwarden, Dockge, Cockpit                    │
-└───────┬─────────────────────────────────┬───────────────────┘
-        │                                 │
-        ▼                                 ▼
-┌───────────────────┐         ┌───────────────────────┐
-│   Vaultwarden     │         │      Dockge           │
-│    (internal)     │         │  docker container     │
-│  vaultwarden:80   │         │  management UI        │
-└───────────────────┘         │    dockge:5001        │
-        │                     └───────────────────────┘
-        ▼                                   
-┌─────────────────┐                 
-│  vw-data volume │                 
-│  (persistent)   │                 
-└─────────────────┘                 
+│               Nginx Proxy Manager (Reverse Proxy)            │
+│  • Web UI for managing proxy hosts (port 81)                 │
+│  • Routes to Vaultwarden, Dockge, Cockpit, Uptime Kuma       │
+└───────┬──────────────────────────┬──────────────────────────┘
+        │                          │
+        ▼                          ▼
+┌──────────────────┐    ┌────────────────────────┐
+│   Vaultwarden    │    │        Dockge           │
+│   (internal)     │    │   docker container      │
+│ vaultwarden:80   │    │   management UI         │
+└──────────────────┘    │     dockge:5001         │
+                        └────────────────────────┘
 ```
 
 ## Service Details
@@ -120,11 +129,12 @@ will be happy to do so.
 | Service | Port(s) | Network | Health Check |
 |---------|---------|---------|--------------|
 | AdGuard Home | 53 (DNS), 3000 (Web) | `lsio` (host) | Built-in |
-| Caddy | 80, 443 | `shared-web` | Auto |
+| Nginx Proxy Manager | 80, 443, 81 (Admin) | `shared-web` | Auto |
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
 | Dockge | 5001 | `shared-web` | Auto |
-| Watchtower | 8080 (API) | `watchtower_default` | Auto |
+| Watchtower | N/A | `watchtower_default` | Auto |
 | Cockpit | 9090 | Host (systemd) | Built-in |
+| Uptime Kuma | 3001 | Host | Built-in |
 
 ---
 
@@ -147,7 +157,7 @@ docker network create shared-web
 
 # Deploy each service
 cd services/adguardhome && docker compose up -d
-cd ../caddy && docker compose up -d
+cd ../nginx-proxy-manager && docker compose up -d
 cd ../vaultwarden && docker compose up -d
 cd ../dockge && docker compose up -d
 cd ../watchtower && docker compose up -d
@@ -169,8 +179,8 @@ docker compose down           # Stop
 cd services/vaultwarden
 docker compose up -d
 
-# Caddy (reverse proxy)
-cd services/caddy
+# Nginx Proxy Manager (reverse proxy)
+cd services/nginx-proxy-manager
 docker compose up -d
 
 # Dockge (container manager)
@@ -179,6 +189,10 @@ docker compose up -d
 
 # Watchtower (auto-updates)
 cd services/watchtower
+docker compose up -d
+
+# Uptime Kuma (monitoring)
+cd services/uptime-kuma
 docker compose up -d
 ```
 
@@ -192,9 +206,8 @@ homelab/
 │   ├── adguardhome/
 │   │   ├── docker-compose.yml
 │   │   └── AdGuardHome.yaml              # Main config (sync from running container)
-│   ├── caddy/
-│   │   ├── docker-compose.yml
-│   │   └── Caddyfile                     # Reverse proxy config
+│   ├── nginx-proxy-manager/
+│   │   └── docker-compose.yml            # Reverse proxy with web UI
 │   ├── cockpit/
 │   │   └── docker-compose.yml            # Docker alternative (system package preferred)
 │   ├── vaultwarden/
@@ -202,6 +215,8 @@ homelab/
 │   │   └── .env.example                  # Template for secrets
 │   ├── dockge/
 │   │   └── docker-compose.yml
+│   ├── uptime-kuma/
+│   │   └── docker-compose.yml            # Uptime monitoring
 │   └── watchtower/
 │       └── docker-compose.yml
 ├── .github/
@@ -223,7 +238,7 @@ homelab/
 
 This repo uses [Renovate](https://github.com/renovatebot/renovate) to automatically create PRs for:
 
-- Docker base image updates (`caddy:latest`, `vaultwarden/server:latest`, etc.)
+- Docker base image updates (`jc21/nginx-proxy-manager:latest`, `vaultwarden/server:latest`, etc.)
 - Docker Compose version updates
 - GitHub Actions updates
 
@@ -231,13 +246,15 @@ Renovate runs on a schedule and groups related updates. Check `renovate.json` fo
 
 ### Config Sync (Auto-commit Server Changes)
 
-The `sync-config.yml` workflow can be triggered to pull configuration from the running homeserver and commit changes. This captures:
+The `auto-commit-config.yml` workflow runs every 6 hours to pull configuration from the running homeserver and commit changes. This captures:
 
 - AdGuard Home YAML config changes
-- Caddyfile modifications
-- Docker Compose file updates
+- Docker Compose file updates (Nginx Proxy Manager, Dockge, Watchtower)
+- ZSH config changes
+- Neovim config changes
+- README timestamp updates
 
-Run manually from Actions tab or set up a cron schedule.
+Run manually from Actions tab or via the cron schedule (`0 */6 * * *`).
 
 ---
 

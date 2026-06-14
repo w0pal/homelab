@@ -51,7 +51,7 @@
       "schedule": ["after 2am on sunday"],
       "matchPackageNames": [
         "/^vaultwarden/server$/",
-        "/^caddy$/",
+        "/^jc21/nginx-proxy-manager$/",
         "/^adguard/adguardhome$/",
         "/^louislam/dockge$/",
         "/^containrrr/watchtower$/"

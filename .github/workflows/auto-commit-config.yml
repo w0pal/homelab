@@ -24,17 +24,17 @@ jobs:
         run: |
           docker exec adguardhome cat /opt/adguardhome/conf/AdGuardHome.yaml > services/adguardhome/AdGuardHome.yaml
 
-      - name: Sync Caddy config
+      - name: Strip secrets from configs
         run: |
-          cp /home/homeserver/Caddyfile services/caddy/Caddyfile
+          sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml
 
       - name: Sync Watchtower config
         run: |
           cp /home/homeserver/watchtower/docker-compose.yml services/watchtower/docker-compose.yml
 
-      - name: Sync Caddy docker-compose
+      - name: Sync Nginx Proxy Manager docker-compose
         run: |
-          cp /home/homeserver/caddy/docker-compose.yml services/caddy/docker-compose.yml
+          cp /home/homeserver/homelab/services/nginx-proxy-manager/docker-compose.yml services/nginx-proxy-manager/docker-compose.yml
 
       - name: Sync Dockge docker-compose
         run: |

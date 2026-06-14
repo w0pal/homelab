@@ -41,8 +41,8 @@ git pull --rebase origin main 2>/dev/null || warn "Could not pull from origin (m
 log "Syncing AdGuard Home config..."
 cp /home/homeserver/AdGuardHome.yaml services/adguardhome/AdGuardHome.yaml
 
-log "Syncing Caddy config..."
-cp /home/homeserver/Caddyfile services/caddy/Caddyfile
+log "Stripping secrets from configs..."
+sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml
 
 log "Syncing Vaultwarden docker-compose..."
 cp /home/homeserver/vaultwarden/docker-compose.yml services/vaultwarden/docker-compose.yml
@@ -50,8 +50,8 @@ cp /home/homeserver/vaultwarden/docker-compose.yml services/vaultwarden/docker-c
 log "Syncing Watchtower docker-compose..."
 cp /home/homeserver/watchtower/docker-compose.yml services/watchtower/docker-compose.yml
 
-log "Syncing Caddy docker-compose..."
-cp /home/homeserver/caddy/docker-compose.yml services/caddy/docker-compose.yml
+log "Syncing Nginx Proxy Manager docker-compose..."
+cp /home/homeserver/homelab/services/nginx-proxy-manager/docker-compose.yml services/nginx-proxy-manager/docker-compose.yml
 
 # Check for changes
 if git diff --quiet; then
