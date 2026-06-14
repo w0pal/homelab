@@ -1,232 +1,280 @@
+http:
+  pprof:
+    port: 6060
+    enabled: false
+  doh:
+    routes:
+      - GET /dns-query
+      - POST /dns-query
+      - GET /dns-query/{ClientID}
+      - POST /dns-query/{ClientID}
+    insecure_enabled: false
+  address: 0.0.0.0:3000
+  session_ttl: 30d
+users:
+  - name: admin
+    password: $2b$10$nrHfjQPSoB6QetjfyF.w3uuUHpBNyav4dLFXrJhBU/AAwsCx0ViXO
+  - name: openwrt
+    password: $2a$10$20rS4BquJZIZ62QCsL2ZrerfYu4EOm3M5NwwT8cH.ToNejNAZvkqi
 auth_attempts: 5
 block_auth_min: 15
-clients:
-  persistent: []
-  runtime_sources:
-    arp: true
-    dhcp: true
-    hosts: true
-    rdns: true
-    whois: true
-dhcp:
-  dhcpv4:
-    gateway_ip: 192.168.0.1
-    icmp_timeout_msec: 1000
-    lease_duration: 86400
-    options: []
-    range_end: 192.168.0.200
-    range_start: 192.168.0.100
-    subnet_mask: 255.255.255.0
-  dhcpv6:
-    lease_duration: 86400
-    ra_allow_slaac: false
-    ra_slaac_only: false
-    range_start: ''
-  enabled: false
-  interface_name: wlan0
-  local_domain_name: lan
+http_proxy: ""
+language: en
+theme: auto
 dns:
-  aaaa_disabled: false
-  allowed_clients: []
-  anonymize_client_ip: false
   bind_hosts:
-  - 0.0.0.0
-  blocked_hosts:
-  - version.bind
-  - id.server
-  - hostname.bind
-  bogus_nxdomain: []
-  bootstrap_dns:
-  - 9.9.9.10
-  - 149.112.112.10
-  - 2620:fe::10
-  - 2620:fe::fe:10
-  bootstrap_prefer_ipv6: false
-  cache_enabled: true
-  cache_optimistic: false
-  cache_optimistic_answer_ttl: 30s
-  cache_optimistic_max_age: 12h
-  cache_size: 4194304
-  cache_ttl_max: 0
-  cache_ttl_min: 0
-  disallowed_clients: []
-  dns64_prefixes: []
-  edns_client_subnet:
-    custom_ip: ''
-    enabled: true
-    use_custom: false
-  enable_dnssec: true
-  fallback_dns: []
-  fastest_timeout: 1s
-  handle_ddr: true
-  hostsfile_enabled: true
-  ipset: []
-  ipset_file: ''
-  local_ptr_upstreams: []
-  max_goroutines: 300
-  pending_requests:
-    enabled: true
+    - 0.0.0.0
   port: 53
-  private_networks: []
+  anonymize_client_ip: false
   ratelimit: 20
   ratelimit_subnet_len_ipv4: 24
   ratelimit_subnet_len_ipv6: 56
   ratelimit_whitelist: []
   refuse_any: true
-  serve_http3: false
-  serve_plain_dns: true
-  trusted_proxies:
-  - 127.0.0.0/8
-  - ::1/128
   upstream_dns:
-  - https://security.cloudflare-dns.com/dns-query
-  upstream_dns_file: ''
+    - https://cloudflare-dns.com/dns-query
+  upstream_dns_file: ""
+  bootstrap_dns:
+    - 9.9.9.10
+    - 149.112.112.10
+    - 2620:fe::10
+    - 2620:fe::fe:10
+  fallback_dns: []
   upstream_mode: load_balance
+  fastest_timeout: 1s
+  allowed_clients: []
+  disallowed_clients: []
+  blocked_hosts:
+    - version.bind
+    - id.server
+    - hostname.bind
+  trusted_proxies:
+    - 127.0.0.0/8
+    - ::1/128
+  cache_enabled: true
+  cache_size: 4194304
+  cache_ttl_min: 0
+  cache_ttl_max: 0
+  cache_optimistic: false
+  cache_optimistic_answer_ttl: 30s
+  cache_optimistic_max_age: 12h
+  bogus_nxdomain: []
+  aaaa_disabled: false
+  enable_dnssec: false
+  edns_client_subnet:
+    custom_ip: ""
+    enabled: false
+    use_custom: false
+  max_goroutines: 300
+  handle_ddr: true
+  ipset: []
+  ipset_file: ""
+  bootstrap_prefer_ipv6: false
   upstream_timeout: 10s
+  private_networks: []
+  use_private_ptr_resolvers: false
+  local_ptr_upstreams: []
   use_dns64: false
+  dns64_prefixes: []
+  serve_http3: false
   use_http3_upstreams: false
-  use_private_ptr_resolvers: true
+  serve_plain_dns: true
+  hostsfile_enabled: true
+  pending_requests:
+    enabled: true
+tls:
+  enabled: false
+  server_name: ""
+  force_https: false
+  port_https: 443
+  port_dns_over_tls: 853
+  port_dns_over_quic: 853
+  port_dnscrypt: 0
+  dnscrypt_config_file: ""
+  certificate_chain: ""
+  private_key: ""
+  certificate_path: ""
+  private_key_path: ""
+  strict_sni_check: false
+querylog:
+  dir_path: ""
+  ignored:
+    - pixiv.net
+  interval: 90d
+  size_memory: 1000
+  enabled: true
+  ignored_enabled: true
+  file_enabled: true
+statistics:
+  dir_path: ""
+  ignored: []
+  interval: 1d
+  enabled: true
+  ignored_enabled: false
+filters:
+  - enabled: true
+    url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
+    name: AdGuard DNS filter
+    id: 1
+  - enabled: true
+    url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
+    name: AdAway Default Blocklist
+    id: 2
+  - enabled: false
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.mini.txt
+    name: HaGeZi Pro mini
+    id: 1779376512
+  - enabled: false
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt
+    name: HaGeZi Pro
+    id: 1779936892
+  - enabled: false
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/ultimate.txt
+    name: HaGeZi Multi Ultimate
+    id: 1780571383
+whitelist_filters: []
+user_rules:
+  - '@@||www.pixiv.net^$important'
+  - '@@||pixiv.net^$important'
+  - ""
+dhcp:
+  enabled: false
+  interface_name: ""
+  local_domain_name: lan
+  dhcpv4:
+    gateway_ip: ""
+    subnet_mask: ""
+    range_start: ""
+    range_end: ""
+    lease_duration: 86400
+    icmp_timeout_msec: 1000
+    options: []
+  dhcpv6:
+    range_start: ""
+    lease_duration: 86400
+    ra_slaac_only: false
+    ra_allow_slaac: false
 filtering:
-  blocked_response_ttl: 10
+  blocking_ipv4: ""
+  blocking_ipv6: ""
   blocked_services:
-    ids: []
     schedule:
       time_zone: UTC
-  blocking_ipv4: ''
-  blocking_ipv6: ''
-  blocking_mode: default
-  cache_time: 30
-  filtering_enabled: true
-  filters_update_interval: 24
-  parental_block_host: family-block.dns.adguard.com
-  parental_cache_size: 1048576
-  parental_enabled: true
+    ids:
+      - betano
+      - betfair
+      - betway
+      - blaze
+      - plenty_of_fish
+      - tinder
+      - wizz
   protection_disabled_until: null
-  protection_enabled: true
-  rewrites:
-  - answer: 192.168.0.206
-    domain: lab.tailf2af36.ts.net
-    enabled: true
-  - answer: 192.168.0.206
-    domain: vault.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: lab.lan
-    enabled: true
-  - answer: 192.168.0.206
-    domain: adguardhome.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: dockge.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: uptime-kuma.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: cockpit.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: vaultwarden.lab
-    enabled: true
-  - answer: 192.168.0.206
-    domain: npm.lab
-    enabled: true
-  rewrites_enabled: true
-  safe_fs_patterns:
-  - /opt/adguardhome/work/userfilters/*
   safe_search:
+    enabled: true
     bing: true
     duckduckgo: true
     ecosia: true
-    enabled: true
     google: true
     pixabay: true
     yandex: true
     youtube: false
+  blocking_mode: default
+  parental_block_host: family-block.dns.adguard.com
   safebrowsing_block_host: standard-block.dns.adguard.com
+  rewrites:
+    - domain: router.test
+      answer: 192.168.0.1
+      enabled: true
+    - domain: ashariputra.cctv.com
+      answer: 192.168.1.3
+      enabled: true
+    - domain: lab.tailf2af36.ts.net
+      answer: 192.168.0.206
+      enabled: true
+    - domain: vault.local
+      answer: 192.168.0.206
+      enabled: true
+    - domain: vault.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: adguardhome.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: dockge.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: uptime-kuma.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: cockpit.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: vaultwarden.lab
+      answer: 192.168.0.206
+      enabled: true
+    - domain: npm.lab
+      answer: 192.168.0.206
+      enabled: true
+  safe_fs_patterns:
+    - /var/lib/adguardhome/userfilters/*
   safebrowsing_cache_size: 1048576
-  safebrowsing_enabled: true
   safesearch_cache_size: 1048576
-filters:
-- enabled: false
-  id: 1
-  name: AdGuard DNS filter
-  url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
-- enabled: false
-  id: 2
-  name: AdAway Default Blocklist
-  url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
-- enabled: true
-  id: 1780963786
-  name: HaGeZi Pro
-  url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt
-http:
-  address: 0.0.0.0:3000
-  doh:
-    insecure_enabled: true
-    routes:
-    - GET /dns-query
-    - POST /dns-query
-    - GET /dns-query/{ClientID}
-    - POST /dns-query/{ClientID}
-  pprof:
-    enabled: true
-    port: 6060
-  session_ttl: 30d
-http_proxy: ''
-language: ''
+  parental_cache_size: 1048576
+  cache_time: 30
+  filters_update_interval: 24
+  blocked_response_ttl: 10
+  filtering_enabled: true
+  rewrites_enabled: true
+  parental_enabled: true
+  safebrowsing_enabled: true
+  protection_enabled: true
+clients:
+  runtime_sources:
+    whois: true
+    arp: true
+    rdns: true
+    dhcp: true
+    hosts: true
+  persistent:
+    - safe_search:
+        enabled: true
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: UTC
+        ids: []
+      name: 'Client fd75:a7ec:e875::'
+      ids:
+        - 'fd75:a7ec:e875::'
+      tags: []
+      upstreams: []
+      uid: 019e4ae6-00de-7b0a-a9db-82943d9fb843
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
 log:
-  compress: false
-  enabled: false
-  file: ''
-  local_time: false
-  max_age: 3
+  enabled: true
+  file: ""
   max_backups: 0
   max_size: 100
+  max_age: 3
+  compress: false
+  local_time: false
   verbose: false
 os:
-  group: ''
+  group: ""
+  user: ""
   rlimit_nofile: 0
-  user: ''
-querylog:
-  dir_path: ''
-  enabled: true
-  file_enabled: true
-  ignored:
-  - pixiv.net
-  ignored_enabled: false
-  interval: 90d
-  size_memory: 1000
 schema_version: 34
-statistics:
-  dir_path: ''
-  enabled: true
-  ignored:
-  - pixiv.net
-  ignored_enabled: false
-  interval: 1d
-theme: auto
-tls:
-  certificate_chain: ''
-  certificate_path: ''
-  dnscrypt_config_file: ''
-  enabled: false
-  force_https: false
-  port_dns_over_quic: 853
-  port_dns_over_tls: 853
-  port_dnscrypt: 0
-  port_https: 443
-  private_key: ''
-  private_key_path: ''
-  server_name: ''
-  strict_sni_check: false
-user_rules:
-- '@@||www.pixiv.net^$important'
-- '@@||pixiv.net^$important'
-- '@@||www.deviantart.com^$important'
-- '@@||deviantart.com^$important'
-- ''
-users:
-- name: admin
-  password: ''
-whitelist_filters: []
