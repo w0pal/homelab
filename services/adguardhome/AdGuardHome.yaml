@@ -171,9 +171,6 @@ filtering:
     - domain: lab.tailf2af36.ts.net
       answer: 192.168.0.206
       enabled: true
-    - domain: vault.lab
-      answer: 192.168.0.206
-      enabled: true
     - domain: lab.lan
       answer: 192.168.0.206
       enabled: true
