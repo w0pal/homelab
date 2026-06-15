@@ -309,4 +309,4 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ---
 
-*Last updated: 2026-06-15*
+*Last updated: 2026-06-16*
