@@ -49,10 +49,6 @@ jobs:
         run: |
           cp -r /home/homeserver/.config/nvim/* configs/nvim/
 
-      - name: Update README timestamp
-        run: |
-          sed -i "s/\*Last updated: .*\*/*Last updated: $(date +%Y-%m-%d)*/" README.md
-
       - name: Check for changes
         id: changes
         run: |
@@ -64,6 +60,11 @@ jobs:
             echo "Changes detected:"
             git diff --stat
           fi
+
+      - name: Update README timestamp
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          sed -i "s/\*Last updated: .*\*/*Last updated: $(date +%Y-%m-%d)*/" README.md
 
       - name: Commit and push changes
         if: steps.changes.outputs.changed == 'true'
