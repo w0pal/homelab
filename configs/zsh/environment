@@ -8,6 +8,8 @@ export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.sdkman/bin:$HOME/.
 # Added by Antigravity CLI installer
 export PATH="/var/home/w0pal/.local/bin:$PATH"
 
+# Pi
+export PATH="/home/homeserver/.local/share/pi-node/node-v22.22.3-linux-arm64/bin:$PATH"
 export PATH=/home/homeserver/.opencode/bin:$PATH
 
 if (( $+commands[nvim] )); then

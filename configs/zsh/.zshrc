@@ -16,4 +16,3 @@ do
 done
 
 unset zsh_config_file
-
