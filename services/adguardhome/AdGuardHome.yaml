@@ -112,11 +112,11 @@ statistics:
   enabled: true
   ignored_enabled: false
 filters:
-  - enabled: true
+  - enabled: false
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
     name: AdGuard DNS filter
     id: 1
-  - enabled: true
+  - enabled: false
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
     name: AdAway Default Blocklist
     id: 2
@@ -124,7 +124,7 @@ filters:
     url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.mini.txt
     name: HaGeZi Pro mini
     id: 1779376512
-  - enabled: false
+  - enabled: true
     url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt
     name: HaGeZi Pro
     id: 1779936892
