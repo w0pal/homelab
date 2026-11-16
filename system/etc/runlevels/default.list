@@ -1,0 +1,11 @@
+9router
+acpid
+containerd
+crond
+docker
+hermes-gateway
+local
+ntpd
+redis
+sshd
+tailscale
