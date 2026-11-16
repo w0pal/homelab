@@ -1,0 +1,5 @@
+@reboot cd /home/tomori/discord-cicilan-bot && /home/tomori/discord-cicilan-bot/node_modules/.bin/pm2 resurrect >> /home/tomori/pm2-boot.log 2>&1
+
+# Hermes gateway auto-start + keep-alive
+
+# 9router auto-start + keep-alive
