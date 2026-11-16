@@ -1,0 +1,6 @@
+UUID=01517c7a-92b8-4667-8567-bdb5477657b8	/	ext4	rw,relatime	0 1
+UUID=DC75-63FC	/boot/efi	vfat	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=utf8,shortname=mixed,errors=remount-ro	0 2
+UUID=0086499e-99f7-470d-b879-9b2923ff3be3	none	swap	defaults	0 0
+/dev/cdrom	/media/cdrom	iso9660	noauto,ro 0 0
+/dev/usbdisk	/media/usb	vfat	noauto	0 0
+tmpfs	/tmp	tmpfs	nosuid,nodev	0	0
