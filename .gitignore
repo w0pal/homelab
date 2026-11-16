@@ -66,3 +66,26 @@ certs/
 
 # Renovate
 renovate.json.bak
+# homelab sync: never commit secrets/data/runtime
+**/.env
+**/.env.*
+!**/.env.example
+**/*secret*
+**/*token*
+**/*password*
+**/secrets/
+**/vw-data/
+**/work/
+**/data/
+**/letsencrypt/
+**/conf/*.key
+**/*.db
+**/*.sqlite*
+**/*.log
+system/etc/doas.conf
+system/etc/doas.d/
+system/etc/wireguard/
+system/etc/cni/
+system/etc/ssh/ssh_host_*_key
+system/etc/ssh/*_key
+.docker.txt.swp
