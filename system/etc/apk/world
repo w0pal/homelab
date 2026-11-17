@@ -14,6 +14,7 @@ cairo
 chafa
 chromium
 cjson
+cmake
 containerd
 coreutils
 curl
@@ -40,6 +41,7 @@ fontconfig
 freetype
 fribidi
 fzf
+g++
 gcc
 gcompat
 gdk-pixbuf
@@ -50,6 +52,7 @@ glib
 gmp
 gnupg
 gnutls
+go
 gpgme
 gpgmepp
 graphite2
@@ -123,12 +126,14 @@ libzip
 linux-firmware-i915
 linux-firmware-intel
 linux-firmware-other
+linux-headers
 linux-lts
 lsblk
 lua5.5-libs
 lz4
 lzo
 m4
+make
 miniupnpc
 mosh
 mosh-server
