@@ -145,7 +145,6 @@ npm
 npth
 nspr
 nss
-ollama
 oniguruma
 openblas
 opencore-amr
@@ -201,3 +200,4 @@ yazi-cli
 zoxide
 zsh
 zsh-vcs
+zstd
