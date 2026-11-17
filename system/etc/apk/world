@@ -12,6 +12,7 @@ ca-certificates
 caddy
 cairo
 chafa
+chromium
 cjson
 containerd
 coreutils
@@ -40,6 +41,7 @@ freetype
 fribidi
 fzf
 gcc
+gcompat
 gdk-pixbuf
 ghostscript
 giflib
