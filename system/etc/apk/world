@@ -129,6 +129,7 @@ linux-firmware-intel
 linux-firmware-other
 linux-headers
 linux-lts
+llama-server
 llama.cpp
 lsblk
 lua5.5-libs
