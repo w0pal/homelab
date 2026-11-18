@@ -1,5 +1,4 @@
 9router
-acpid
 containerd
 crond
 dnsmasq
