@@ -6,7 +6,7 @@ services:
     container_name: vaultwarden
     restart: always
     environment:
-      - DOMAIN=https://takamatsu.tailb43e01.ts.net
+      - DOMAIN=https://takamatsu.tailb43e01.ts.net:8443
       - WEBSOCKET_ENABLED=true
       - SIGNUPS_ALLOWED=false
       - ADMIN_TOKEN=${TOKEN}
