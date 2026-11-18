@@ -22,6 +22,7 @@ cyrus-sasl
 dav1d
 dbus
 dmidecode
+dnsmasq
 doas
 docker
 docker-cli-compose
