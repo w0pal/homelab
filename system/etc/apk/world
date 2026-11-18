@@ -37,6 +37,7 @@ ffmpeg
 fftw
 file
 findutils
+fio
 flac
 fontconfig
 freetype
