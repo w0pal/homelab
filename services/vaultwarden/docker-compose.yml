@@ -15,7 +15,7 @@ services:
     volumes:
       - ./vw-data:/data
     ports:
-      - "127.0.0.1:8080:80"
+      - "192.168.0.240:8080:80"
     networks:
       - shared-web
     healthcheck:
