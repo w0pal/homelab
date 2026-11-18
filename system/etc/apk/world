@@ -65,6 +65,8 @@ grub-efi
 harfbuzz
 highway
 htop
+imagemagick
+imagemagick-libs
 imath
 inxi
 iw
