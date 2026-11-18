@@ -2,7 +2,7 @@ services:
   app:
     image: jc21/nginx-proxy-manager:latest
     container_name: nginx-proxy-manager
-    restart: unless-stopped
+    restart: always
     ports:
       - "192.168.0.240:80:80"
       - "192.168.0.240:443:443"
