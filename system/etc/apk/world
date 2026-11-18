@@ -11,6 +11,7 @@ bzip2
 ca-certificates
 caddy
 cairo
+cargo
 chafa
 chromium
 cjson
