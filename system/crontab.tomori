@@ -4,3 +4,7 @@
 
 # 9router auto-start + keep-alive
 */5 * * * * /home/tomori/homelab/scripts/auto-commit-homelab.sh >> /home/tomori/.local/log/homelab-sync.log 2>&1
+
+# Hermes watchdog: DNS-aware revive of llama-server (local LFM3) + messaging gateway
+@reboot /home/tomori/.hermes/watchdog.sh >> /home/tomori/.hermes/logs/watchdog.log 2>&1
+*/2 * * * * /home/tomori/.hermes/watchdog.sh >> /home/tomori/.hermes/logs/watchdog.log 2>&1
