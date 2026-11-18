@@ -2,6 +2,7 @@
 acpid
 containerd
 crond
+dnsmasq
 docker
 hermes-gateway
 local
