@@ -14,7 +14,7 @@ services:
       - /:/host:ro
     read_only: true
     tmpfs:
-      - /tmp
+      - /tmp:size=16m,nosuid,noexec
     cap_drop:
       - ALL
     security_opt:
