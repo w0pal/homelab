@@ -213,6 +213,7 @@ def main():
         sys.exit(1)
     log(f"polling {API_URL} for commands")
 
+    idle = 0
     while True:
         try:
             resp = http("GET", API_URL + "?worker=poll", timeout=12)
@@ -223,8 +224,14 @@ def main():
             continue
 
         if not job:
-            time.sleep(0.3)
+            idle += 1
+            # Idle backoff: BLPOP already blocks 5s server-side; add up to
+            # 5s more so an idle lab costs ~1 command/10s, not 1/5s
+            # (Upstash daily command budget). Resets when work arrives.
+            time.sleep(min(5.0, 0.3 * idle))
             continue
+
+        idle = 0
 
         if time.time() * 1000 - job.get("createdAt", 0) > JOB_MAX_AGE_MS:
             log(f"dropping stale job {job.get('id')}")
