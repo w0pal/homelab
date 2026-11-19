@@ -1,5 +1,5 @@
 {
-  "logo": { "type": "alpine" },
+  "logo": { "source": "Alpine" },
   "modules": [
     "os",
     "host",
