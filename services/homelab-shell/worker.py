@@ -200,7 +200,10 @@ def execute(command):
     if command == "date":
         return run_argv(["date"])
     if command == "lsblk":
-        return run_argv(["lsblk"])
+        out, code = run_argv(["lsblk"])
+        # Present host mountpoints as they look on the host, not /host/...
+        out = out.replace("/host/", "/").replace(" /host\n", " /\n")
+        return out, code
     return f"command not allowed: {command}\n", 126
 
 
