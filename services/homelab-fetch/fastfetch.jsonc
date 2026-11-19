@@ -1,0 +1,15 @@
+{
+  "logo": { "type": "none" },
+  "modules": [
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "cpu",
+    "gpu",
+    "memory",
+    "swap",
+    { "type": "disk", "folders": "/host" },
+    "loadavg"
+  ]
+}
