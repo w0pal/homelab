@@ -3,6 +3,7 @@ services:
     build: .
     image: homelab-shell:local
     container_name: homelab-shell
+    hostname: takamatsu
     restart: unless-stopped
     env_file: .env
     # Read-only host mounts: commands see the HOST's /proc, /sys, os-release
