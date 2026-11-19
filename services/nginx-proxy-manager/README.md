@@ -18,8 +18,12 @@ Admin UI: `http://192.168.0.240:81`. Running deployment: `~/containers/nginx-pro
 
 ## How the hostname is routed elsewhere (tailscale serve/funnel on takamatsu)
 
-- `:443` — **Funnel (public)**, only `/9router` → `127.0.0.1:20128` (9router LLM router UI/API). Root `/` is 404.
-- `:8443` — tailnet-only serve, `/` → vaultwarden. This is the URL Vaultwarden's `DOMAIN` currently advertises.
+- `:443` — **Funnel (public)**: `/` → vaultwarden (`192.168.0.240:8080`), `/9router` → `127.0.0.1:20128`
+  (9router LLM router UI/API). Vaultwarden is intentionally public here (option chosen 2026-11-20);
+  `DOMAIN=https://takamatsu.tailb43e01.ts.net` (bare URL) so `/api/config` advertises port-less URLs.
+  Signups disabled; keep 2FA enabled on accounts.
+- `:8443` — tailnet-only serve, `/` → vaultwarden (legacy URL, kept for old clients).
 - `:8080` — tailnet-only → router (`192.168.0.1:80`); `:8181` — tailnet-only → NPM UI.
-- Funnel is per-port (`AllowFunnel` keyed by host:port): any handler added to funneled `:443`
-  becomes public. Vaultwarden cannot share `:443` with `/9router` privately.
+- Funnel is per-port (`AllowFunnel` keyed by host:port): every handler on funneled `:443` is public.
+- Gotcha: `tailscale serve --bg --https=443 …` on a funneled port REMOVES Funnel from that port;
+  re-enable with `tailscale funnel --bg --https=443 --set-path=<path> <target>` (handlers merge per path).
