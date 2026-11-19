@@ -15,13 +15,13 @@ services:
       - /:/host:ro
     read_only: true
     tmpfs:
-      - /tmp
+      - /tmp:size=16m,nosuid,noexec
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     mem_limit: 256m
-    cpus: 1.0
+    cpus: 0.5
     pids_limit: 64
     logging:
       driver: json-file
