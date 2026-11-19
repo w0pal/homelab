@@ -8,3 +8,6 @@
 # Hermes watchdog: DNS-aware revive of messaging gateway
 @reboot /home/tomori/.hermes/watchdog.sh >> /home/tomori/.hermes/logs/watchdog.log 2>&1
 */2 * * * * /home/tomori/.hermes/watchdog.sh >> /home/tomori/.hermes/logs/watchdog.log 2>&1
+
+# Weekly renewal of the tailscale-issued cert for NPM proxy host 7 (Vaultwarden LAN)
+17 4 * * 1 /home/tomori/homelab/scripts/renew-takamatsu-cert.sh >> /home/tomori/.local/log/takamatsu-cert.log 2>&1
