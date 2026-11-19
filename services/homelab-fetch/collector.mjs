@@ -11,7 +11,7 @@ const execFileAsync = promisify(execFile)
 
 const API_URL = (process.env.HOMELAB_API_URL || '').replace(/\/+$/, '')
 const TOKEN = process.env.HOMELAB_TRACKER_TOKEN || ''
-const INTERVAL_MS = Math.max(1000, Number(process.env.PUSH_INTERVAL_MS) || 5000)
+const INTERVAL_MS = Math.max(1000, Number(process.env.PUSH_INTERVAL_MS) || 10_000)
 const IP_OVERRIDE = process.env.HOMELAB_IP || ''
 const USER_OVERRIDE = process.env.HOMELAB_USER || ''
 
