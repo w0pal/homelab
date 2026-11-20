@@ -75,7 +75,8 @@ def validate_args(spec, tokens):
     while i < len(tokens):
         tok = tokens[i]
         if tok in ("--help", "--version"):
-            return None
+            i += 1
+            continue  # allowed, but keep validating the rest
         if spec.get("noMeta") and re.search(r"[><|&;`$()\\]", tok):
             return "shell metacharacters not allowed"
         if spec.get("any"):
