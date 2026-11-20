@@ -54,11 +54,11 @@ COMMANDS = {
     "date": {"short": "uR", "long": {"--utc": 0, "--rfc-2822": 0, "--rfc-3339": 0, "--iso-8601": 0}, "plus": True, "positional": "none"},
     "df": {"short": "hHkmgGTilPa", "valueShort": {"t": "word", "x": "word", "B": "word"}, "long": {"--total": 0, "--human-readable": 0, "--si": 0, "--inodes": 0, "--local": 0, "--portability": 0, "--print-type": 0, "--no-sync": 0, "--type": 1, "--exclude-type": 1, "--block-size": 1}, "positional": "none"},
     "free": {"short": "hmkgtb", "valueShort": {"s": "num", "c": "num"}, "long": {"--human": 0, "--mega": 0, "--giga": 0, "--kilo": 0, "--bytes": 0, "--total": 0, "--loose": 0, "--wide": 0, "--seconds": 1, "--count": 1}, "positional": "none"},
-    "lsblk": {"short": "abdeilmnJOPprstTSV", "valueShort": {"o": "word", "x": "word", "e": "num", "b": "num"}, "long": {"--all": 0, "--bytes": 0, "--nodeps": 0, "--exclude": 1, "--fs": 0, "--inode": 0, "--json": 0, "--list": 0, "--merge": 0, "--noheadings": 0, "--output": 1, "--output-all": 0, "--pairs": 0, "--paths": 0, "--raw": 0, "--scsi": 0, "--topology": 0, "--tree": 0}, "positional": "none"},
+    "lsblk": {"short": "abDdfilmMnJOPprstTSV", "valueShort": {"o": "word", "x": "word", "e": "num"}, "long": {"--all": 0, "--bytes": 0, "--discard": 0, "--nodeps": 0, "--exclude": 1, "--fs": 0, "--ascii": 0, "--json": 0, "--list": 0, "--merge": 0, "--perms": 0, "--noheadings": 0, "--output": 1, "--output-all": 0, "--pairs": 0, "--paths": 0, "--raw": 0, "--scsi": 0, "--inverse": 0, "--topology": 0, "--tree": 0, "--sort": 1}, "positional": "none"},
     "lscpu": {"short": "abcepsJBy", "long": {"--all": 0, "--online": 0, "--offline": 0, "--bytes": 0, "--caches": 0, "--extended": 0, "--parse": 0, "--json": 0}, "positional": "none"},
     "vmstat": {"short": "adfstw", "valueShort": {"S": "word", "p": "word"}, "long": {"--active": 0, "--disk": 0, "--forks": 0, "--slabs": 0, "--stats": 0, "--timestamp": 0, "--unit": 1, "--wide": 0, "--partition": 1}, "positional": "num", "maxPos": 2},
     "fastfetch": {"short": "", "positional": "none"},
-    "echo": {"any": True},
+    "echo": {"any": True, "noMeta": True},
     "top": {"short": "bdisSH", "valueShort": {"d": "num", "n": "num", "o": "word", "w": "num", "p": "num", "u": "word"}, "blockShort": "c", "long": {"--batch": 0, "--delay": 1, "--iterations": 1, "--sort": 1, "--width": 1, "--pid": 1, "--user": 1}, "positional": "none"},
 }
 
@@ -76,6 +76,8 @@ def validate_args(spec, tokens):
         tok = tokens[i]
         if tok in ("--help", "--version"):
             return None
+        if spec.get("noMeta") and re.search(r"[><|&;`$()\\]", tok):
+            return "shell metacharacters not allowed"
         if spec.get("any"):
             i += 1
             continue
