@@ -6,6 +6,7 @@ docker
 hermes-gateway
 local
 ntpd
+paseo
 redis
 sshd
 tailscale
