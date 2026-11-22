@@ -7,6 +7,7 @@ hermes-gateway
 local
 ntpd
 paseo
+portfolio-api
 redis
 sshd
 tailscale
