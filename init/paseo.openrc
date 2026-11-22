@@ -1,0 +1,37 @@
+#!/sbin/openrc-run
+# Optional NATIVE OpenRC service for the Paseo daemon.
+# NOT installed: /etc/init.d is root-owned and the shell has no passwordless
+# root here. To install, run as root (via doas with your password):
+#
+#   doas cp ~/.local/etc/paseo-openrc /etc/init.d/paseo
+#   doas chmod 755 /etc/init.d/paseo
+#   doas rc-update add paseo default
+#   doas rc-service paseo start
+#
+# If you use this native service, remove the two "Paseo daemon ..." cron lines
+# from `crontab -e` first (the user-level watchdog would fight with it).
+
+name="paseo"
+description="Paseo daemon (local AI agent control plane)"
+
+command="/usr/bin/node"
+command_args="--disable-warning=DEP0040 /home/tomori/.npm-global/lib/node_modules/@getpaseo/cli/dist/index.js daemon run"
+command_user="tomori:tomori"
+directory="/home/tomori"
+
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/home/tomori/.paseo/daemon-service.log"
+error_log="/home/tomori/.paseo/daemon-service.log"
+
+supervisor="supervise-daemon"
+supervise_daemon_args="--respawn-delay 5 --respawn-max 0 --respawn-period 0"
+
+depend() {
+    need net
+    after dnsmasq 9router
+}
+
+start_pre() {
+    export PATH="/home/tomori/.local/bin:$PATH"
+    checkpath -f -o tomori:tomori -m 0644 "$output_log"
+}

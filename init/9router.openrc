@@ -1,0 +1,22 @@
+#!/sbin/openrc-run
+name="9router"
+description="9router local router service"
+command="/usr/bin/node"
+command_args="/home/tomori/.npm-global/lib/node_modules/9router/cli.js --no-browser --skip-update -t"
+command_user="tomori:tomori"
+directory="/home/tomori"
+pidfile="/run/${RC_SVCNAME}.pid"
+supervisor="supervise-daemon"
+supervise_daemon_args="--respawn-delay 5 --respawn-max 0 --respawn-period 0"
+output_log="/home/tomori/.9router/9router.log"
+error_log="/home/tomori/.9router/9router.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -d -o tomori:tomori -m 0755 /home/tomori/.9router
+    checkpath -f -o tomori:tomori -m 0644 "$output_log"
+}
