@@ -11,7 +11,7 @@ SESSION=portfolio-api
 HEALTH=http://127.0.0.1:3001/api/homelab
 FUNNEL_PATH=/homelab-status
 LOG=/home/tomori/.local/log/portfolio-api-watchdog.log
-ts() { /usr/bin/date '+%F %T'; }
+ts() { /bin/date '+%F %T'; }
 
 healthy() {
   /usr/bin/curl -fsS --max-time 5 "$HEALTH" >/dev/null 2>&1
@@ -34,7 +34,7 @@ if ! healthy; then
   fi
 fi
 
-if ! /usr/bin/tailscale funnel status 2>/dev/null | /usr/bin/grep -q -- "$FUNNEL_PATH"; then
+if ! /usr/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- "$FUNNEL_PATH"; then
   echo "$(ts) funnel path missing, re-adding $FUNNEL_PATH" >> "$LOG"
   /usr/bin/tailscale funnel --bg --https=443 \
     --set-path="$FUNNEL_PATH" http://127.0.0.1:3001/api/homelab \
