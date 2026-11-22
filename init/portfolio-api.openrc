@@ -18,7 +18,7 @@ depend() {
 }
 
 start_pre() {
-	checkpath -f -o tomori:tomori -m 0644 "$output_log"
+	/usr/libexec/rc/bin/checkpath -f -o tomori:tomori -m 0644 "$output_log"
 }
 
 start_post() {
