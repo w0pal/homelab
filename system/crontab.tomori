@@ -12,3 +12,6 @@
 # Weekly renewal of the tailscale-issued cert for NPM proxy host 7 (Vaultwarden LAN)
 17 4 * * 1 /home/tomori/homelab/scripts/renew-takamatsu-cert.sh >> /home/tomori/.local/log/takamatsu-cert.log 2>&1
 
+# Portfolio API + homelab-status funnel watchdog
+@reboot /home/tomori/homelab/scripts/ensure-portfolio-api.sh >> /home/tomori/.local/log/portfolio-api-watchdog.log 2>&1
+*/2 * * * * /home/tomori/homelab/scripts/ensure-portfolio-api.sh >> /home/tomori/.local/log/portfolio-api-watchdog.log 2>&1
