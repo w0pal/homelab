@@ -8,7 +8,7 @@ SRC="$REPO/init/portfolio-api.openrc"
 DST=/etc/init.d/portfolio-api
 
 install -m 0755 "$SRC" "$DST"
-checkpath -f -o tomori:tomori -m 0644 /home/tomori/.local/log/portfolio-api.log
+/usr/libexec/rc/bin/checkpath -f -o tomori:tomori -m 0644 /home/tomori/.local/log/portfolio-api.log
 
 # Retire the tmux-based instance so the service can own port 3001.
 su tomori -s /bin/sh -c 'tmux kill-session -t portfolio-api 2>/dev/null || true' || true
