@@ -15,6 +15,8 @@ su tomori -s /bin/sh -c 'tmux kill-session -t portfolio-api 2>/dev/null || true'
 
 # Remove the old cron watchdog entries for this API.
 tmp=$(mktemp)
+/bin/chown tomori:tomori "$tmp"
+/bin/chmod 600 "$tmp"
 crontab -u tomori -l 2>/dev/null | /bin/grep -v 'ensure-portfolio-api.sh' | /bin/grep -v '# Portfolio API + homelab-status funnel watchdog' > "$tmp" || true
 crontab -u tomori "$tmp"
 rm -f "$tmp"
