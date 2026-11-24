@@ -5,6 +5,7 @@ dnsmasq
 docker
 hermes-gateway
 local
+mdadm
 ntpd
 paseo
 portfolio-api
