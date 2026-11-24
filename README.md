@@ -23,6 +23,8 @@ will be happy to do so.
 
 # Installed Apps
 
+The tables below are the original catalogue and still include a few experiments that are no longer running. For what is live right now on `takamatsu`, see [Current runtime](#current-runtime).
+
 <h2>🛡️ Infrastructure</h2>
 <table>
     <tr>
@@ -99,6 +101,70 @@ will be happy to do so.
     </tr>
 </table>
 
+<h2>☁️ Storage & Docs</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/nextcloud.svg" width="32" /></td>
+        <td>Nextcloud</td>
+        <td>File sync and sharing with MariaDB, Redis and a storage watcher; served at nextcloud.lab via NPM</td>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/file.svg" width="32" /></td>
+        <td>Wordcraft</td>
+        <td>Static writing web app plus a file API on ports 8090 and 8091</td>
+    </tr>
+</table>
+
+<h2>🤖 Homelab Helpers</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/terminal.svg" width="32" /></td>
+        <td>homelab-fetch</td>
+        <td>Read-only fastfetch reporter used by the Hermes bot</td>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/terminal.svg" width="32" /></td>
+        <td>homelab-shell</td>
+        <td>Read-only shell worker that polls the portfolio API for jobs</td>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/robot.svg" width="32" /></td>
+        <td>Hermes Gateway</td>
+        <td>Discord bot runtime under OpenRC; shares skills from ~/.agents/skills</td>
+    </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/router.svg" width="32" /></td>
+        <td>9router / portfolio-api</td>
+        <td>Routing daemon and portfolio API, both managed by OpenRC</td>
+    </tr>
+</table>
+
+## Current runtime
+
+Snapshot taken 2026-11-24 from `takamatsu` (Alpine 3.24, x86_64).
+
+**Docker Compose projects running:** `adguardhome`, `homelab-fetch`,
+`homelab-shell`, `nginx-proxy-manager`, `nextcloud` (4 containers),
+`vaultwarden`, `watchtower`. Wordcraft's two containers run from `docker run`,
+not Compose.
+
+**OpenRC services enabled:** `9router`, `containerd`, `crond`, `dnsmasq`,
+`docker`, `hermes-gateway`, `local`, `ntpd`, `paseo`, `portfolio-api`, `redis`,
+`sshd`, `tailscale`.
+
+**Configs kept but not currently running:** Dockge, Cockpit, Uptime Kuma,
+opencode-bot, hermes-agent containers.
+
 ---
 
 ## Network Architecture
@@ -123,6 +189,8 @@ will be happy to do so.
 └──────────┘  └──────────┘  └──────────┘       └──────────┘
 ```
 
+The diagram is historical; Nextcloud (`nextcloud.lab`) is also proxied through NPM.
+
 ## Service Details
 
 | Service | Port(s) | Network | Health Check |
@@ -134,6 +202,10 @@ will be happy to do so.
 | Watchtower | N/A | `watchtower_default` | Auto |
 | Cockpit | 9090 | `shared-web` | Built-in |
 | Uptime Kuma | 3001 | Host | Built-in |
+| Nextcloud | 80 (via NPM) | `backend`, `shared-web` | MariaDB healthcheck |
+| Wordcraft | 8090, 8091 | bridge | — |
+| homelab-fetch | none (outbound only) | none | — |
+| homelab-shell | none (outbound only) | none | — |
 
 ---
 
@@ -161,6 +233,8 @@ cd ../vaultwarden && docker compose up -d
 cd ../dockge && docker compose up -d
 cd ../cockpit && docker compose up -d
 cd ../watchtower && docker compose up -d
+cd ../nextcloud && docker compose up -d
+cd ../wordcraft && docker compose up -d
 ```
 
 ### Individual Service Commands
@@ -192,6 +266,14 @@ docker compose up -d
 cd services/watchtower
 docker compose up -d
 
+# Nextcloud (needs MYSQL_* / NEXTCLOUD_* vars in .env)
+cd services/nextcloud
+docker compose up -d
+
+# Wordcraft (paths assume /home/tomori)
+cd services/wordcraft
+docker compose up -d
+
 # Uptime Kuma (monitoring)
 cd services/uptime-kuma
 docker compose up -d
@@ -218,7 +300,20 @@ homelab/
 │   │   └── docker-compose.yml
 │   ├── uptime-kuma/
 │   │   └── docker-compose.yml            # Uptime monitoring
-│   └── watchtower/
+│   ├── watchtower/
+│   │   └── docker-compose.yml
+│   ├── nextcloud/
+│   │   └── docker-compose.yml            # db, redis, app, storage watcher
+│   ├── wordcraft/
+│   │   ├── docker-compose.yml            # reconstructed from running containers
+│   │   └── README.md
+│   ├── homelab-fetch/
+│   │   └── docker-compose.yml
+│   ├── homelab-shell/
+│   │   └── docker-compose.yml
+│   ├── opencode-bot/
+│   │   └── docker-compose.yml
+│   └── hermes-agent/
 │       └── docker-compose.yml
 ├── .github/
 │   └── workflows/
@@ -256,6 +351,8 @@ The `auto-commit-config.yml` workflow runs every 6 hours to pull configuration f
 - README timestamp updates
 
 Run manually from Actions tab or via the cron schedule (`0 */6 * * *`).
+
+On `takamatsu`, a local cron entry also runs `scripts/auto-commit-homelab.sh` every 5 minutes.
 
 ---
 
