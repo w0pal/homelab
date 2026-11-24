@@ -56,6 +56,8 @@ services:
       - app:/var/www/html
       - ./data:/mnt/nextcloud-data
       - /home/tomori/storage:/mnt/host-storage
+      - /mnt/usb-sda:/mnt/usb-sda
+      - /mnt/backup/gdrive:/mnt/backup/gdrive
       - ./apache-mpm.conf:/etc/apache2/mods-available/mpm_prefork.conf:ro
     mem_limit: 2g
     networks:
