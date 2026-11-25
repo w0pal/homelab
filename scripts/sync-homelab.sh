@@ -59,7 +59,17 @@ fi
   . /etc/os-release 2>/dev/null || true
   echo "os=${ID:-unknown} ${VERSION_ID:-unknown}"
   echo "docker_containers:"
-  docker ps --format '{{.Names}}' 2>/dev/null | sort || true
+  managed=$( {
+    find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##'
+    printf '%s\n' homelab-fetch homelab-shell wordcraft-files wordcraft-web
+  } | sort )
+  docker ps --format '{{.Names}}' 2>/dev/null | while IFS= read -r c; do
+    [ -z "$c" ] && continue
+    printf '%s\n' "$managed" | while IFS= read -r m; do
+      [ -z "$m" ] && continue
+      case "$c" in "$m"|"$m"-*) printf '%s\n' "$c"; break ;; esac
+    done
+  done | sort || true
   echo "docker_compose_dirs:"
   find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##' | sort || true
   echo "openrc_default:"
