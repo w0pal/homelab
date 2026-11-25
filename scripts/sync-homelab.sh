@@ -105,14 +105,12 @@ sync_compose() { # src_dir name
   done
 }
 
-sync_compose /home/tomori/containers/adguardhome adguardhome
-sync_compose /home/tomori/containers/vaultwarden vaultwarden
-sync_compose /home/tomori/containers/watchtower watchtower
-sync_compose /home/tomori/containers/nginx-proxy-manager nginx-proxy-manager
-sync_compose /home/tomori/containers/9router 9router
-sync_compose /home/tomori/containers/nextcloud nextcloud
-sync_compose /home/tomori/containers/opencode-bot opencode-bot
-sync_compose /home/tomori/containers/hermes-agent hermes-agent
+for dir in /home/tomori/containers/*; do
+  [ -f "$dir/docker-compose.yml" ] || [ -f "$dir/docker-compose.yaml" ] || continue
+  name=$(basename "$dir")
+  case "$name" in dockge|cockpit|uptime-kuma) continue ;; esac
+  sync_compose "$dir" "$name"
+done
 
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
 for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
