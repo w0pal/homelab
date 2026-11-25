@@ -24,6 +24,8 @@ copy_file /etc/conf.d/docker system/etc/conf.d/docker
 copy_file /etc/ssh/sshd_config system/etc/ssh/sshd_config
 copy_file /etc/rc.conf system/etc/rc.conf
 copy_file /etc/local.d/wifi-powersave.start system/etc/local.d/wifi-powersave.start
+copy_file /etc/dnsmasq.conf system/etc/dnsmasq.conf
+copy_file /etc/os-release system/etc/os-release
 
 # OpenRC service scripts we maintain
 for svc in 9router hermes-gateway paseo portfolio-api; do
