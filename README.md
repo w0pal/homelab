@@ -23,7 +23,7 @@ will be happy to do so.
 
 # Installed Apps
 
-The tables below are the original catalogue and still include a few experiments that are no longer running. For what is live right now on `takamatsu`, see [Current runtime](#current-runtime).
+The tables below show what is live on `takamatsu`. Retired experiments are listed near the end of this document.
 
 <h2>🛡️ Infrastructure</h2>
 <table>
@@ -43,33 +43,9 @@ The tables below are the original catalogue and still include a few experiments 
         <td>Reverse proxy with web UI for managing proxy hosts, SSL certificates, and access lists</td>
     </tr>
     <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/dockge.svg" width="32" /></td>
-        <td>Dockge</td>
-        <td>Docker container management UI for easy service administration</td>
-    </tr>
-    <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/watchtower.svg" width="32" /></td>
         <td>Watchtower</td>
         <td>Automated container updates on a schedule (Monthly at 2 AM)</td>
-    </tr>
-    <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cockpit.svg" width="32" /></td>
-        <td>Cockpit</td>
-        <td>Web-based server management console (Docker container, port 9090)</td>
-    </tr>
-</table>
-
-<h2>📊 Monitoring</h2>
-<table>
-    <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/uptime-kuma.svg" width="32" /></td>
-        <td>Uptime Kuma</td>
-        <td>Uptime monitoring and status page for all services</td>
     </tr>
 </table>
 
@@ -162,34 +138,21 @@ not Compose.
 `docker`, `hermes-gateway`, `local`, `ntpd`, `paseo`, `portfolio-api`, `redis`,
 `sshd`, `tailscale`.
 
-**Configs kept but not currently running:** Dockge, Cockpit, Uptime Kuma,
-opencode-bot, hermes-agent containers.
+**Configs kept but not currently running:** opencode-bot and hermes-agent containers.
 
 ---
 
 ## Network Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Internet / Tailscale                      │
-└───────────────────────────┬─────────────────────────────────┘
-             │ HTTP (80) / HTTPS (443)
-                             ▼
-┌──────────────────────────────────────────────────────────────────┐
-│              Nginx Proxy Manager (Reverse Proxy)                  │
-│  • Web UI for managing proxy hosts (port 81)                      │
-│  • Routes to Vaultwarden, Dockge, Cockpit, Uptime Kuma            │
-└──────┬─────────────┬──────────────┬──────────────────┬───────────┘
-       │             │              │                  │
-       ▼             ▼              ▼                  ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐       ┌──────────┐
-│Vaultwarden│  │  Dockge  │  │ Cockpit  │       │Uptime    │
-│(internal) │  │ container│  │ container│       │  Kuma    │
-│:80        │  │ :5001    │  │ :9090    │       │ :3001    │
-└──────────┘  └──────────┘  └──────────┘       └──────────┘
+Internet / Tailscale
+        │
+        ▼
+Nginx Proxy Manager
+        │
+        ├── Vaultwarden (:8080 internal)
+        └── Nextcloud (:80 internal)
 ```
-
-The diagram is historical; Nextcloud (`nextcloud.lab`) is also proxied through NPM.
 
 ## Service Details
 
@@ -198,10 +161,7 @@ The diagram is historical; Nextcloud (`nextcloud.lab`) is also proxied through N
 | AdGuard Home | 53 (DNS), 3000 (Web) | `lsio` (host) | Built-in |
 | Nginx Proxy Manager | 80, 443, 81 (Admin) | `shared-web` | Auto |
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
-| Dockge | 5001 | `shared-web` | Auto |
 | Watchtower | N/A | `watchtower_default` | Auto |
-| Cockpit | 9090 | `shared-web` | Built-in |
-| Uptime Kuma | 3001 | Host | Built-in |
 | Nextcloud | 80 (via NPM) | `backend`, `shared-web` | MariaDB healthcheck |
 | Wordcraft | 8090, 8091 | bridge | — |
 | homelab-fetch | none (outbound only) | none | — |
@@ -223,18 +183,11 @@ The diagram is historical; Nextcloud (`nextcloud.lab`) is also proxied through N
 git clone https://github.com/w0pal/homelab.git
 cd homelab
 
-# Create the shared network (run once)
-docker network create shared-web
+# Apply host config from a fresh clone
+sudo ./bootstrap.sh --apply
 
-# Deploy each service
-cd services/adguardhome && docker compose up -d
-cd ../nginx-proxy-manager && docker compose up -d
-cd ../vaultwarden && docker compose up -d
-cd ../dockge && docker compose up -d
-cd ../cockpit && docker compose up -d
-cd ../watchtower && docker compose up -d
-cd ../nextcloud && docker compose up -d
-cd ../wordcraft && docker compose up -d
+# Optional: install packages and start active compose services
+sudo ./bootstrap.sh --apply --packages --docker
 ```
 
 ### Individual Service Commands
@@ -254,14 +207,6 @@ docker compose up -d
 cd services/nginx-proxy-manager
 docker compose up -d
 
-# Dockge (container manager)
-cd services/dockge
-docker compose up -d
-
-# Cockpit (web server management)
-cd services/cockpit
-docker compose up -d
-
 # Watchtower (auto-updates)
 cd services/watchtower
 docker compose up -d
@@ -274,9 +219,6 @@ docker compose up -d
 cd services/wordcraft
 docker compose up -d
 
-# Uptime Kuma (monitoring)
-cd services/uptime-kuma
-docker compose up -d
 ```
 
 ---
@@ -291,15 +233,9 @@ homelab/
 │   │   └── AdGuardHome.yaml              # Main config (sync from running container)
 │   ├── nginx-proxy-manager/
 │   │   └── docker-compose.yml            # Reverse proxy with web UI
-│   ├── cockpit/
-│   │   └── docker-compose.yml            # Web server management (Docker container)
 │   ├── vaultwarden/
 │   │   ├── docker-compose.yml
 │   │   └── .env.example                  # Template for secrets
-│   ├── dockge/
-│   │   └── docker-compose.yml
-│   ├── uptime-kuma/
-│   │   └── docker-compose.yml            # Uptime monitoring
 │   ├── watchtower/
 │   │   └── docker-compose.yml
 │   ├── nextcloud/
@@ -325,12 +261,20 @@ homelab/
 │   ├── paseo.openrc
 │   ├── portfolio-api.openrc
 │   └── README.md
+├── bootstrap.sh                      # Generated one-file host bootstrap
 ├── scripts/
+│   ├── generate-bootstrap.sh         # Regenerates bootstrap.sh
 │   ├── sync-homelab.sh               # Snapshot live host config
 │   ├── auto-commit-homelab.sh        # Legacy sync helper
 │   ├── ensure-portfolio-api.sh       # Watchdog fallback
 │   ├── install-portfolio-api-service.sh
 │   └── renew-takamatsu-cert.sh
+├── system/
+│   ├── inventory.txt                 # Stable live-state inventory
+│   └── etc/                          # Sanitized host config snapshot
+├── configs/
+│   ├── zsh/                          # Shell config
+│   └── nvim/                         # Neovim config
 ├── renovate.json                     # Renovate bot configuration
 ├── .gitignore
 └── README.md
@@ -358,6 +302,8 @@ The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It ne
 
 The old five-minute `auto-commit-homelab.sh` cron entry is retired. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
 
+Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit.
+
 ---
 
 ## Secrets Management
@@ -382,7 +328,7 @@ Template files (`.env.example`) show required variables for local deployment.
   Storage: 229 GiB ext4
   ```
 
-The old ZTE B860H set-top box is retired.
+The old ZTE B860H set-top box is retired. Dockge, Cockpit, and Uptime Kuma are also retired and no longer installed.
 
 - **OpenWrt** (router @ 192.168.0.1)
   ```
