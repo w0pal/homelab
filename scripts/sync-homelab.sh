@@ -117,3 +117,6 @@ done
 
 # remove junk
 rm -f docker.txt
+
+# keep the one-file bootstrap in sync with this snapshot
+./scripts/generate-bootstrap.sh >/dev/null 2>&1 || true
