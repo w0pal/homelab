@@ -1,0 +1,19 @@
+# --- Kitty graphics resize replay -------------------------------------------
+# Under tmux, fastfetch stashes the exact Kitty stream it sends to this pane's
+# tty in /tmp/ff-kitty-<tty>.bin. Those placements are pinned to pane cells, so
+# resizing the window can push the logo off-screen. tmux has no resize hook, but
+# zsh gets SIGWINCH while sitting at a prompt, so replay the stashed stream once
+# the dust settles (debounced to once a second).
+ff_kitty_replay() {
+    emulate -L zsh
+    [[ -n $TTY ]] || return
+    local stash="/tmp/ff-kitty-${TTY:t}.bin"
+    [[ -r $stash ]] || return
+    local last=0
+    [[ -r /tmp/ff-kitty-replay.stamp ]] && last=$(< /tmp/ff-kitty-replay.stamp)
+    (( EPOCHSECONDS - last < 1 )) && return
+    print -r -- $EPOCHSECONDS > /tmp/ff-kitty-replay.stamp
+    ( sleep 0.3; printf '\033[H'; cat $stash > /dev/tty ) &!
+}
+
+TRAPWINCH() { ff_kitty_replay }

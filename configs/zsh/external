@@ -18,9 +18,8 @@ if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && (( $+commands[tmux] )); then
   # Function to run MOTD scripts and start zsh
   _tmux_new_session_with_motd() {
     local session_name="${1:-home}"
-    # run-parts executes all scripts in /etc/update-motd.d/ in order
-    # then starts interactive zsh inside the tmux session
-    tmux new-session -s "$session_name" "run-parts /etc/update-motd.d/; zsh -i"
+    # MOTD comes from default-command in ~/.tmux.conf; just create the session
+    tmux new-session -s "$session_name"
   }
 
   # Check if "home" session already exists

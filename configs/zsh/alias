@@ -19,3 +19,12 @@ alias dev-image="distrobox enter dev-image"
 alias v='nvim'
 alias zshcfg='git --git-dir=$HOME/.zsh-config.git --work-tree=$HOME'
 alias zshlg='lazygit --git-dir=$HOME/.zsh-config.git --work-tree=$HOME'
+alias sudo='doas'
+alias tldr='tealdeer'
+alias fastfetch="$HOME/.local/bin/fastfetch"
+if [[ -n "$TMUX" ]]; then
+  alias clear="printf '\033Ptmux;\033\033_Ga=d,d=A\033\033\\\\\033\\\\'; command clear"
+fi
+
+# Mosh convenience: connect and auto-attach tmux (always show predictions for low-latency feel)
+alias mt='MOSH_PREDICTION_DISPLAY=always mosh tomori@takamatsu -- tmux new -A -s main'

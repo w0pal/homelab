@@ -281,3 +281,4 @@ npm() { _load_nvm; command npm "$@"; }
 npx() { _load_nvm; command npx "$@"; }
 pnpm() { _load_nvm; command pnpm "$@"; }
 yarn() { _load_nvm; command yarn "$@"; }
+unsetopt beep
