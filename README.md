@@ -45,7 +45,7 @@ The tables below show what is live on `takamatsu`. Retired experiments are liste
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/watchtower.svg" width="32" /></td>
         <td>Watchtower</td>
-        <td>Automated container updates on a schedule (Monthly at 2 AM)</td>
+        <td>Weekly image checks on Monday at 3 AM for selected registry-based services</td>
     </tr>
 </table>
 
@@ -208,7 +208,7 @@ docker compose up -d
 cd services/nginx-proxy-manager
 docker compose up -d
 
-# Watchtower (auto-updates)
+# Watchtower (weekly, scoped)
 cd services/watchtower
 docker compose up -d
 
