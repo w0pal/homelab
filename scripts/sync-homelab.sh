@@ -27,6 +27,18 @@ copy_file /etc/local.d/wifi-powersave.start system/etc/local.d/wifi-powersave.st
 copy_file /etc/dnsmasq.conf system/etc/dnsmasq.conf
 copy_file /etc/os-release system/etc/os-release
 
+# User shell and editor config (text only, no history or secrets)
+copy_file /home/tomori/.zshrc configs/zsh/.zshrc
+for f in /home/tomori/.config/zsh/* /home/tomori/.config/zsh/.[!.]*; do
+  [ -f "$f" ] || continue
+  copy_file "$f" "configs/zsh/$(basename "$f")"
+done
+for f in /home/tomori/.config/nvim/* /home/tomori/.config/nvim/.[!.]*; do
+  [ -f "$f" ] || continue
+  case "$(basename "$f")" in .git|data|lazy-lock.json) continue ;; esac
+  copy_file "$f" "configs/nvim/$(basename "$f")"
+done
+
 # OpenRC service scripts we maintain
 for svc in 9router hermes-gateway paseo portfolio-api; do
   copy_file "/etc/init.d/$svc" "system/etc/init.d/$svc"
