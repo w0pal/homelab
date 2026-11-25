@@ -34,10 +34,6 @@ jobs:
         run: |
           cp /home/homeserver/homelab/services/nginx-proxy-manager/docker-compose.yml services/nginx-proxy-manager/docker-compose.yml
 
-      - name: Sync Dockge docker-compose
-        run: |
-          cp /home/homeserver/dockge/docker-compose.yml services/dockge/docker-compose.yml
-
       - name: Sync ZSH config
         run: |
           cp /home/homeserver/.zshrc configs/zsh/.zshrc
