@@ -8,4 +8,5 @@ Group changed paths into cohesive features. Commit one feature at a time with ex
 
 Use docs(readme) for README-only changes, chore(init) for OpenRC service files, chore(cron) for crontab, chore(script) for scripts, ci(github) for workflow files, and chore(service/<name>) for service configs. Use feat or fix only when the change really adds or repairs behavior.
 
+Never document any container, checkout, or path that is not part of this repo's managed service list. Treat work project checkouts as private and omit them completely from README, inventory, bootstrap, and commit messages.
 Never commit secrets, real .env files, tokens, or keys. If a diff contains a secret, stop and report it. After all feature commits, push once with git push origin main and verify HEAD matches origin/main. If there is nothing to commit, exit quietly.
