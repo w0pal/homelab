@@ -1,7 +1,7 @@
 # My Homelab
 
 This repository contains the GitOps configuration for my personal homeserver.
-This is purely a **hobby project** — it runs services for fun and personal
+This is purely a **hobby project**. It runs services for fun and personal
 convenience (media, passwords, network tools), not for development, production,
 or anything serious. I tinker with it in my free time.
 
@@ -12,8 +12,8 @@ find something useful, feel free to use it in your own projects.
 
 The setup includes a mix of media services, personal productivity tools, and
 infrastructure components. Some are for fun, some are for convenience, and
-others are just experiments. Nothing here is production-grade — it's just my
-weekend project.
+others are just experiments. Nothing here is production grade. It is my weekend
+project.
 
 Feel free to explore and see how everything is set up. If you have any
 questions or suggestions, you can reach out to me on GitHub (w0pal). If I can help you with something, I
@@ -151,7 +151,7 @@ The tables below are the original catalogue and still include a few experiments 
 
 ## Current runtime
 
-Snapshot taken 2026-11-24 from `takamatsu` (Alpine 3.24, x86_64).
+Snapshot taken 2026-11-22 from `takamatsu` (Alpine 3.24, x86_64).
 
 **Docker Compose projects running:** `adguardhome`, `homelab-fetch`,
 `homelab-shell`, `nginx-proxy-manager`, `nextcloud` (4 containers),
@@ -317,10 +317,20 @@ homelab/
 │       └── docker-compose.yml
 ├── .github/
 │   └── workflows/
-│       ├── renovate.yml              # Auto dependency updates
-│       └── sync-config.yml           # Auto-commit config changes
+│       ├── renovate.yml              # Dependency updates
+│       └── auto-commit-config.yml    # Manual config sync
+├── init/
+│   ├── 9router.openrc
+│   ├── hermes-gateway.openrc
+│   ├── paseo.openrc
+│   ├── portfolio-api.openrc
+│   └── README.md
 ├── scripts/
-│   └── sync-from-server.sh           # Pull configs from running server
+│   ├── sync-homelab.sh               # Snapshot live host config
+│   ├── auto-commit-homelab.sh        # Legacy sync helper
+│   ├── ensure-portfolio-api.sh       # Watchdog fallback
+│   ├── install-portfolio-api-service.sh
+│   └── renew-takamatsu-cert.sh
 ├── renovate.json                     # Renovate bot configuration
 ├── .gitignore
 └── README.md
@@ -340,19 +350,13 @@ This repo uses [Renovate](https://github.com/renovatebot/renovate) to automatica
 
 Renovate runs on a schedule and groups related updates. Check `renovate.json` for configuration.
 
-### Config Sync (Auto-commit Server Changes)
+### AI GitOps sync
 
-The `auto-commit-config.yml` workflow runs every 6 hours to pull configuration from the running homeserver and commit changes. This captures:
+A Hermes cron job watches the host every five minutes. It runs `scripts/sync-homelab.sh`, reviews the diff, and groups changes by feature. Each feature gets its own Conventional Commit with a short body that names the files and explains the change. The job pushes to `main` once after all commits.
 
-- AdGuard Home YAML config changes
-- Docker Compose file updates (Nginx Proxy Manager, Dockge, Cockpit, Watchtower)
-- ZSH config changes
-- Neovim config changes
-- README timestamp updates
+The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It never commits secrets or real `.env` files. It skips runs when nothing changed.
 
-Run manually from Actions tab or via the cron schedule (`0 */6 * * *`).
-
-On `takamatsu`, a local cron entry also runs `scripts/auto-commit-homelab.sh` every 5 minutes.
+The old five-minute `auto-commit-homelab.sh` cron entry is retired. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
 
 ---
 
@@ -360,13 +364,7 @@ On `takamatsu`, a local cron entry also runs `scripts/auto-commit-homelab.sh` ev
 
 **Never commit secrets to this repo!**
 
-The only secret used by GitHub Actions is:
-
-| Secret | Where to Set |
-|--------|--------------|
-| `HOMESERVER_SSH_KEY` | GitHub Repository Settings → Secrets → Actions |
-
-This allows the auto-sync workflow to SSH into the homeserver and pull config changes.
+The GitHub Actions run uses the built-in `GITHUB_TOKEN`. The AI GitOps cron uses the Git credentials already configured on `takamatsu`. No custom secret is required for either path.
 
 Template files (`.env.example`) show required variables for local deployment.
 
@@ -374,15 +372,17 @@ Template files (`.env.example`) show required variables for local deployment.
 
 ## Hardware
 
-- **ZTE B860H** (homeserver)
+- **HP EliteDesk 800 G3 DM 35W** (homelab host, `takamatsu`)
   ```
-  OS: Armbian 26.5.1 trixie aarch64
-  Kernel: Linux 6.12.91-ophub
-  SoC: Amlogic p212 (4 cores @ 1.51 GHz)
-  GPU: Amlogic meson-gxl-mali [Integrated]
-  RAM: 1.75 GiB
-  Storage: 58.24 GiB (SD) + 6.47 GiB (eMMC)
+  OS: Alpine Linux v3.24 x86_64
+  Kernel: Linux 6.18.63-0-lts
+  CPU: Intel Core i5-7500T (4 cores @ 3.30 GHz)
+  GPU: Intel HD Graphics 630 @ 1.10 GHz
+  RAM: 8 GiB DDR4
+  Storage: 229 GiB ext4
   ```
+
+The old ZTE B860H set-top box is retired.
 
 - **OpenWrt** (router @ 192.168.0.1)
   ```
