@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 0 2 1 * *
+      - WATCHTOWER_SCHEDULE=0 0 3 * * 1
       - WATCHTOWER_REMOVE_VOLUMES=false
       - WATCHTOWER_INCLUDE_STOPPED=false
       - WATCHTOWER_REVIVE_STOPPED=false
@@ -13,3 +13,14 @@ services:
       - DOCKER_API_VERSION=1.40
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - nginx-proxy-manager
+      - adguardhome
+      - vaultwarden
+      - nextcloud-app-1
+      - nextcloud-db-1
+      - nextcloud-redis-1
+      - nextcloud-storage-watcher-1
+      - wordcraft-web
+      - wordcraft-files
+      - watchtower
