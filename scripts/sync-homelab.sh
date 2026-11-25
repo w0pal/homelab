@@ -115,15 +115,21 @@ done
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
 for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
   if [ -r "$agh" ]; then
-    awk '
-      /^[[:space:]]*- domain: (dockge|cockpit|uptime-kuma)\.lab/ { skip=3 }
-      skip > 0 { skip--; next }
-      { print }
-    ' "$agh" > services/adguardhome/AdGuardHome.yaml
-    sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml 2>/dev/null || true
+    cp "$agh" services/adguardhome/AdGuardHome.yaml
     break
   fi
 done
+# Sanitize the repo copy even when the live file is not readable by this user.
+# Retired services must not reappear through a later sync.
+if [ -f services/adguardhome/AdGuardHome.yaml ]; then
+  awk '
+    /^[[:space:]]*- domain: (dockge|cockpit|uptime-kuma)\.lab/ { skip=3 }
+    skip > 0 { skip--; next }
+    { print }
+  ' services/adguardhome/AdGuardHome.yaml > services/adguardhome/AdGuardHome.yaml.tmp
+  mv services/adguardhome/AdGuardHome.yaml.tmp services/adguardhome/AdGuardHome.yaml
+  sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml 2>/dev/null || true
+fi
 
 # remove junk
 rm -f docker.txt
