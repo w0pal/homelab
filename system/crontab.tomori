@@ -3,7 +3,6 @@
 # Hermes gateway auto-start + keep-alive
 
 # 9router auto-start + keep-alive
-*/5 * * * * /home/tomori/homelab/scripts/auto-commit-homelab.sh >> /home/tomori/.local/log/homelab-sync.log 2>&1
 
 # Hermes watchdog: DNS-aware revive of messaging gateway
 @reboot /home/tomori/.hermes/watchdog.sh >> /home/tomori/.hermes/logs/watchdog.log 2>&1
