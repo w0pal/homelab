@@ -1,0 +1,28 @@
+#!/sbin/openrc-run
+
+name="portfolio-api"
+description="Portfolio dev API behind the homelab-status funnel"
+command="/usr/bin/node"
+command_args="--env-file=.env scripts/dev-api.mjs"
+command_user="tomori:tomori"
+directory="/home/tomori/Projects/portfolio-web"
+pidfile="/run/${RC_SVCNAME}.pid"
+supervisor="supervise-daemon"
+supervise_daemon_args="--respawn-delay 5 --respawn-max 0 --respawn-period 0"
+output_log="/home/tomori/.local/log/portfolio-api.log"
+error_log="/home/tomori/.local/log/portfolio-api.log"
+
+depend() {
+	need net
+	after docker tailscale
+}
+
+start_pre() {
+	/usr/libexec/rc/bin/checkpath -f -o tomori:tomori -m 0644 "$output_log"
+}
+
+start_post() {
+	if ! /usr/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- '/homelab-status'; then
+		/bin/su tomori -s /bin/sh -c '/usr/bin/tailscale funnel --bg --https=443 --set-path=/homelab-status http://127.0.0.1:3001/api/homelab' >/dev/null 2>&1
+	fi
+}

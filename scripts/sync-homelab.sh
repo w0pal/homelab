@@ -26,8 +26,10 @@ copy_file /etc/rc.conf system/etc/rc.conf
 copy_file /etc/local.d/wifi-powersave.start system/etc/local.d/wifi-powersave.start
 
 # OpenRC service scripts we maintain
-copy_file /etc/init.d/9router system/etc/init.d/9router
-copy_file /etc/init.d/hermes-gateway system/etc/init.d/hermes-gateway
+for svc in 9router hermes-gateway paseo portfolio-api; do
+  copy_file "/etc/init.d/$svc" "system/etc/init.d/$svc"
+  copy_file "/etc/init.d/$svc" "init/$svc.openrc"
+done
 
 # runlevels (default)
 if [ -d /etc/runlevels/default ]; then
