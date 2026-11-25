@@ -9,7 +9,7 @@ fi
 
 # ============================================================================
 # TMUX AUTO-START WITH SINGLE "home" SESSION + MOTD
-# Works for: local terminal, SSH, Cockpit/web terminal
+# Works for: local terminal, SSH, web terminal
 # ============================================================================
 
 # Only run in interactive shells, not already in tmux, and tmux is available
