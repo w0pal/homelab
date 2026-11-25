@@ -135,8 +135,8 @@ Snapshot taken 2026-11-22 from `takamatsu` (Alpine 3.24, x86_64).
 not Compose.
 
 **OpenRC services enabled:** `9router`, `containerd`, `crond`, `dnsmasq`,
-`docker`, `hermes-gateway`, `local`, `ntpd`, `paseo`, `portfolio-api`, `redis`,
-`sshd`, `tailscale`.
+`docker`, `hermes-gateway`, `local`, `mdadm`, `ntpd`, `paseo`, `portfolio-api`,
+`redis`, `sshd`, `tailscale`.
 
 **Configs kept but not currently running:** opencode-bot and hermes-agent containers.
 
@@ -264,6 +264,9 @@ homelab/
 ├── bootstrap.sh                      # Generated one-file host bootstrap
 ├── scripts/
 │   ├── generate-bootstrap.sh         # Regenerates bootstrap.sh
+│   ├── setup-hermes-cron.sh          # Restores the AI GitOps cron job
+│   ├── hermes-cron-monitor.sh        # Cron monitor helper
+│   ├── hermes-ai-commit.prompt.txt   # Cron prompt
 │   ├── sync-homelab.sh               # Snapshot live host config
 │   ├── auto-commit-homelab.sh        # Legacy sync helper
 │   ├── ensure-portfolio-api.sh       # Watchdog fallback
@@ -303,6 +306,8 @@ The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It ne
 The old five-minute `auto-commit-homelab.sh` cron entry is retired. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
 
 Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit.
+
+The Hermes cron job itself is not stored in this repo. It lives in the Hermes profile. On a fresh host, `scripts/setup-hermes-cron.sh` installs the helper scripts and registers the job through `hermes cron create`. The generated `bootstrap.sh` calls that setup script, so a clone plus `sudo ./bootstrap.sh --apply` brings back the dotfiles, service configs, OpenRC services, and the AI GitOps cron.
 
 ---
 
