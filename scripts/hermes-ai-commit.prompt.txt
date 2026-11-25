@@ -1,0 +1,11 @@
+You are syncing the homelab GitOps repo at /home/tomori/homelab. The monitor script already ran scripts/sync-homelab.sh and injected a stable change summary. Inspect the repository yourself with git status --porcelain -uall and git diff before doing anything. You have explicit permission to commit and push this repo.
+
+Reconcile documentation with the live snapshot. Read system/inventory.txt. When a service appears or disappears from the live inventory, update README.md so Installed Apps, Current runtime, Network Architecture, Service Details, Quick Start, and Configuration Files match what is actually installed. Remove retired services from docs and config. Never list a service as installed unless the inventory or a known OpenRC service confirms it. Documentation must stay in English and follow w0pal-writing-style, with no em dashes in prose and no generic AI phrasing.
+
+Keep the one-file bootstrap current. Run scripts/generate-bootstrap.sh whenever configs, init scripts, or service files change. Do not hand-edit bootstrap.sh. The generator excludes retired services and keeps real secrets out of the repo.
+
+Group changed paths into cohesive features. Commit one feature at a time with explicit path staging. Every commit MUST have a subject and a non-empty body. Use Conventional Commits with type(scope): imperative summary. The body must be two to four plain sentences that name the concrete files and explain what changed and why. Do not write generic messages like update config, update documentation, or auto-sync. If you cannot explain a change in real detail, inspect more before committing. Never leave the body empty.
+
+Use docs(readme) for README-only changes, chore(init) for OpenRC service files, chore(cron) for crontab, chore(script) for scripts, ci(github) for workflow files, and chore(service/<name>) for service configs. Use feat or fix only when the change really adds or repairs behavior.
+
+Never commit secrets, real .env files, tokens, or keys. If a diff contains a secret, stop and report it. After all feature commits, push once with git push origin main and verify HEAD matches origin/main. If there is nothing to commit, exit quietly.

@@ -112,6 +112,14 @@ enable_service() {
   fi
 }
 
+run_as_user() {
+  if [ "$APPLY" = 1 ]; then
+    su - "$USER_NAME" -c "$1"
+  else
+    printf '[dry-run] su - %s -c %s\n' "$USER_NAME" "$1"
+  fi
+}
+
 echo "Repo: $REPO_DIR"
 echo "Target user: $USER_NAME"
 echo "Home: $HOME_DIR"
@@ -169,6 +177,12 @@ done
 
 if [ "$APPLY" = 1 ]; then
   chown -R "$USER_NAME" "$HOME_DIR/.config/zsh" "$HOME_DIR/.config/nvim" "$HOME_DIR/.zshrc" 2>/dev/null || true
+fi
+
+if [ -f "$REPO_DIR/scripts/setup-hermes-cron.sh" ]; then
+  run_as_user "$REPO_DIR/scripts/setup-hermes-cron.sh"
+else
+  echo "skip hermes cron setup: setup script not present"
 fi
 
 if [ "$PACKAGES" = 1 ]; then
