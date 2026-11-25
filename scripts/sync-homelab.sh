@@ -101,7 +101,6 @@ sync_compose /home/tomori/containers/9router 9router
 sync_compose /home/tomori/containers/nextcloud nextcloud
 sync_compose /home/tomori/containers/opencode-bot opencode-bot
 sync_compose /home/tomori/containers/hermes-agent hermes-agent
-[ -d /home/tomori/containers/dockge ] && sync_compose /home/tomori/containers/dockge dockge || true
 
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
 for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
