@@ -106,7 +106,11 @@ sync_compose /home/tomori/containers/hermes-agent hermes-agent
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
 for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
   if [ -r "$agh" ]; then
-    cp "$agh" services/adguardhome/AdGuardHome.yaml
+    awk '
+      /^[[:space:]]*- domain: (dockge|cockpit|uptime-kuma)\.lab/ { skip=3 }
+      skip > 0 { skip--; next }
+      { print }
+    ' "$agh" > services/adguardhome/AdGuardHome.yaml
     sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml 2>/dev/null || true
     break
   fi
