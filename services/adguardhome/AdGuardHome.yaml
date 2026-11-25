@@ -200,15 +200,6 @@ filtering:
     - domain: adguardhome.lab
       answer: 192.168.0.206
       enabled: true
-    - domain: dockge.lab
-      answer: 192.168.0.206
-      enabled: true
-    - domain: uptime-kuma.lab
-      answer: 192.168.0.206
-      enabled: true
-    - domain: cockpit.lab
-      answer: 192.168.0.206
-      enabled: true
     - domain: vaultwarden.lab
       answer: 192.168.0.206
       enabled: true
