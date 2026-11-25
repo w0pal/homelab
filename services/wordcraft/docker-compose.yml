@@ -9,8 +9,8 @@ services:
     ports:
       - "8090:80"
     volumes:
-      - /home/tomori/Projects/wordcraft-web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - /home/tomori/Projects/wordcraft-web/wordcraft-web-0.18.1:/usr/share/nginx/html:ro
+      - /home/tomori/storage/Projects/wordcraft-web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/tomori/storage/Projects/wordcraft-web/wordcraft-web-0.18.1:/usr/share/nginx/html:ro
 
   files:
     image: node:22-alpine
@@ -25,7 +25,10 @@ services:
     ports:
       - "8091:8091"
     volumes:
-      - /home/tomori/Projects/wordcraft-web/wordcraft-web-0.18.1:/app:ro
-      - /home/tomori/Projects/wordcraft-web/fonts:/fonts:ro
-      - /home/tomori/Projects/wordcraft-web/server.mjs:/server.mjs:ro
+      - /home/tomori/storage/Projects/wordcraft-web/wordcraft-web-0.18.1:/app:ro
+      - /home/tomori/storage/Projects/wordcraft-web/fonts:/fonts:ro
+      - /home/tomori/storage/Projects/wordcraft-web/server.mjs:/server.mjs:ro
       - /home/tomori:/home/tomori
+      # Disks mounted inside DOC_ROOT so server.mjs path-confinement accepts them.
+      - /mnt/backup:/home/tomori/wordcraft-disks/backup
+      - /mnt/usb-sda:/home/tomori/wordcraft-disks/usb
