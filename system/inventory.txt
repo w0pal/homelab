@@ -4,6 +4,7 @@ arch=x86_64
 os=alpine 3.24.4
 docker_containers:
 adguardhome
+homelab-fetch
 homelab-shell
 nextcloud-app-1
 nextcloud-db-1
