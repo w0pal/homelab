@@ -6,7 +6,7 @@
 exec 9>/tmp/portfolio-api-watchdog.lock
 /usr/bin/flock -n 9 || exit 0
 
-PROJECT=/home/tomori/Projects/portfolio-web
+PROJECT=/home/tomori/storage/Projects/portfolio-web
 SESSION=portfolio-api
 HEALTH=http://127.0.0.1:3001/api/homelab
 FUNNEL_PATH=/homelab-status
