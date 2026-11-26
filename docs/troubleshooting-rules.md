@@ -45,6 +45,19 @@ cd /home/tomori/storage/Projects/portfolio-web
 node --env-file=.env scripts/dev-api.mjs
 ```
 
+The OpenRC service must use that same path. Check with:
+
+| Command | Expected |
+|---|---|
+| `grep '^directory' /etc/init.d/portfolio-api` | `/home/tomori/storage/Projects/portfolio-web` |
+| `ss -ltnp | grep ':3001'` | `0.0.0.0:3001` |
+| `curl http://192.168.0.240:3001/api/homelab` | `200` |
+| `podman logs --tail 5 homelab-fetch` | `pushed #N` |
+
+The collector posts to `192.168.0.240:3001`, so binding the API only to `127.0.0.1` makes the page show offline even when the funnel works. `scripts/dev-api.mjs` now defaults `HOST=0.0.0.0`.
+
+When starting the service through a helper container, use the host network namespace. A helper started with `--network none` will bind port 3001 inside its own namespace and look healthy from inside while the host sees nothing.
+
 Verified results:
 
 | Check | Result |
