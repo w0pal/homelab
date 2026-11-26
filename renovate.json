@@ -53,12 +53,13 @@
         "/^vaultwarden/server$/",
         "/^jc21/nginx-proxy-manager$/",
         "/^adguard/adguardhome$/",
-        "/^containrrr/watchtower$/"
+        "/^vulnerables/web-dvwa$/"
       ]
     }
   ],
   "docker-compose": {
     "managerFilePatterns": [
+      "/^podman/.*\\.ya?ml$/",
       "/^services/.*docker-compose\\.ya?ml$/"
     ]
   },
