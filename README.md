@@ -196,6 +196,10 @@ Direct ports:
 
 ### Deploy All Services
 
+If you are using an AI to clone or troubleshoot this host, read
+`docs/ai-rules.md` first. Private work or professional projects must never
+enter this repo, the inventory, bootstrap, or commit messages.
+
 ```bash
 # Clone this repo
 git clone https://github.com/w0pal/homelab.git
@@ -295,11 +299,13 @@ homelab/
 │   ├── inventory.txt                    # Stable live-state inventory
 │   └── etc/                             # Sanitized host config snapshot
 ├── docs/
+│   ├── ai-rules.md                      # Rules for AI agents working in this repo
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
 ├── configs/
 │   ├── zsh/                             # Shell config
 │   └── nvim/                            # Neovim config
 ├── renovate.json                        # Renovate bot configuration
+├── AGENTS.md                            # Short entry point for AI agents
 ├── .gitignore
 └── README.md
 ```
@@ -333,7 +339,9 @@ The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It ne
 
 The old five-minute `auto-commit-homelab.sh` cron entry is retired. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
 
-Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit.
+Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit. The full rules are in `docs/ai-rules.md`.
+
+Private rule: internal, work, client, employer, professional, or non-homelab projects are never included in inventory, README, bootstrap, docs, commits, branch names, tags, issues, or pull requests. Use only the generic phrase `private checkout` when a mention is unavoidable.
 
 The Hermes cron job itself is not stored in this repo. It lives in the Hermes profile. On a fresh host, `scripts/setup-hermes-cron.sh` installs the helper scripts and registers the job through `hermes cron create`. The generated `bootstrap.sh` calls that setup script, so a clone plus `sudo ./bootstrap.sh --apply` brings back the dotfiles, service configs, OpenRC services, and the AI GitOps cron.
 
