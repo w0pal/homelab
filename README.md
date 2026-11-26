@@ -211,9 +211,12 @@ sudo ./bootstrap.sh --apply --packages --containers
 ### Individual Service Commands
 
 Every project lives in its own file under `podman/`. Run one with
-`podman-compose -f`, or start the whole set at once with the boot script.
+`podman-compose -f`, or bring the existing containers back with the boot script.
+Set `COMPOSE_PROJECT_NAME` so the project name matches what `bootstrap.sh` used.
 
 ```bash
+export COMPOSE_PROJECT_NAME="$USER"
+
 # AdGuard Home
 podman-compose -f podman/podman-adguard.yml up -d
 podman-compose -f podman/podman-adguard.yml logs -f
@@ -236,7 +239,7 @@ podman-compose -f podman/podman-wordcraft.yml up -d
 # DVWA lab, reachable only from the host
 podman-compose -f podman/podman-dvwa.yml up -d
 
-# Start everything the same way boot does
+# Start the containers that already exist, same as boot
 sudo ./scripts/podman-boot.sh
 
 # Image refresh (weekly, replaces the watchtower container)
@@ -284,7 +287,7 @@ homelab/
 │   ├── auto-commit-homelab.sh           # Legacy sync helper
 │   ├── ensure-portfolio-api.sh          # Watchdog fallback
 │   ├── install-portfolio-api-service.sh
-│   ├── podman-boot.sh                   # Boot-time start for every podman/*.yml
+│   ├── podman-boot.sh                   # Boot-time start for existing containers
 │   ├── podman-cgroup-boot.sh            # Mounts cgroup2 before Podman starts
 │   ├── podman-auto-update.sh            # Weekly image refresh
 │   └── renew-takamatsu-cert.sh
