@@ -3,7 +3,7 @@
 Public read-only shell for the portfolio's **Terminal** page. Visitors type
 whitelisted commands on the site; this worker container picks them up from
 the portfolio API queue, runs them against read-only host mounts, and posts
-the output back. No inbound ports, no docker socket, no shell interpretation.
+the output back. No inbound ports, no container runtime socket, no shell interpretation.
 
 ## Allowed commands
 
@@ -20,7 +20,7 @@ shell.
 
 - non-root (`nobody`), `cap_drop: ALL`, `no-new-privileges`, read-only rootfs
 - host mounts all `:ro` (`/proc`, `/sys`, `/etc/os-release`, `/` → `/host`)
-- no published ports, no host network, no docker socket — outbound HTTPS only
+- no published ports, no host network, no container runtime socket, outbound HTTPS only
 - 256 MB / 1 CPU / 64 pids limits
 
 ## Setup
@@ -30,8 +30,9 @@ cp .env.example .env
 # edit .env:
 #   HOMELAB_API_URL=https://<your-portfolio>/api/terminal
 #   HOMELAB_SHELL_TOKEN=<same token as HOMELAB_SHELL_TOKEN on Vercel>
-docker compose up -d --build
-docker logs -f homelab-shell
+cd ../..
+podman-compose -f podman/podman-shell.yml up -d --build
+podman logs -f homelab-shell
 ```
 
 On Vercel set `HOMELAB_SHELL_TOKEN` to the same value. Upstash Redis is

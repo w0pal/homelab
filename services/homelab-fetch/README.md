@@ -30,7 +30,7 @@ directory, because `/proc/net` is network-namespace aware).
 
 - runs as non-root (`node` user), `cap_drop: ALL`, `no-new-privileges`
 - read-only container rootfs, all host mounts `:ro`
-- no docker socket, no published ports, no host network — outbound HTTPS only
+- no container runtime socket, no published ports, no host network, outbound HTTPS only
 - 128 MB / 0.5 CPU limit
 
 ## Setup
@@ -40,8 +40,9 @@ cp .env.example .env
 # edit .env:
 #   HOMELAB_API_URL=https://<your-portfolio>/api/homelab
 #   HOMELAB_TRACKER_TOKEN=<same token as HOMELAB_TRACKER_TOKEN on Vercel>
-docker compose up -d --build
-docker logs -f homelab-fetch
+cd ../..
+podman-compose -f podman/podman-fetch.yml up -d --build
+podman logs -f homelab-fetch
 ```
 
 On the portfolio side (Vercel env vars): set `HOMELAB_TRACKER_TOKEN` to the

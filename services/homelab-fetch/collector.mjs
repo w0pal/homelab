@@ -1,7 +1,7 @@
 // homelab-fetch collector.
 // Runs real fastfetch against read-only host mounts (/proc, /sys,
 // /etc/os-release, /), normalizes the JSON output, and pushes it to the
-// portfolio tracker API. No docker socket, no privileges, non-root user.
+// portfolio tracker API. No container runtime socket, no privileges, non-root user.
 
 import { execFile } from 'node:child_process'
 import { readFileSync } from 'node:fs'
