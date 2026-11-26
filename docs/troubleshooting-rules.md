@@ -1,6 +1,6 @@
 # Troubleshooting rules
 
-Use this when a homelab service or a public-facing site looks down.
+Use this when a homelab service or a public-facing site looks down. Read `docs/ai-rules.md` first when an AI is doing the troubleshooting.
 
 ## Rules
 
@@ -12,6 +12,7 @@ Use this when a homelab service or a public-facing site looks down.
 6. Do not call something fixed until the public endpoint returns the expected status. A healthy container behind a stale proxy rule is still broken.
 7. Do not commit by hand while the AI cron is active. Let the cron commit. If it hangs, cancel that run before retrying.
 8. Every claim needs a command result next to it. If a command could not run, say so.
+9. Never include internal, work, client, employer, professional, or non-homelab projects in docs, inventory, bootstrap, or commits. Use the generic phrase `private checkout` only.
 
 ## Fast checks
 
