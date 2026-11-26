@@ -28,5 +28,5 @@ start_pre() {
 depend() {
 	need net
 	after dnsmasq 9router
-	after docker
+	after local
 }

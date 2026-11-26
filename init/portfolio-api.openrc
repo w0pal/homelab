@@ -14,7 +14,7 @@ error_log="/home/tomori/.local/log/portfolio-api.log"
 
 depend() {
 	need net
-	after docker tailscale
+	after local tailscale
 }
 
 start_pre() {
