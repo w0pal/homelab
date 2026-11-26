@@ -1,3 +1,4 @@
+aardvark-dns
 alpine-base
 alsa-lib
 aom
@@ -12,13 +13,16 @@ ca-certificates
 caddy
 cairo
 cargo
+catatonit
 chafa
 chromium
 cjson
 cmake
 composer
+conmon
 containerd
 coreutils
+crun
 curl
 cyrus-sasl
 dav1d
@@ -154,8 +158,10 @@ mpg123
 musl-dev
 ncurses
 neovim
+netavark
 nettle
 nfs-utils
+nftables
 nmap
 nmap-ncat
 nmap-scripts
@@ -210,6 +216,8 @@ php83-xmlwriter
 php83-zip
 pinentry
 pixman
+podman
+podman-compose
 poppler
 py3-pip
 python3

@@ -12,7 +12,6 @@ nextcloud-redis-1
 nextcloud-storage-watcher-1
 nginx-proxy-manager
 vaultwarden
-watchtower
 wordcraft-files
 wordcraft-web
 docker_compose_dirs:
@@ -26,10 +25,8 @@ vaultwarden
 watchtower
 openrc_default:
 9router
-containerd
 crond
 dnsmasq
-docker
 hermes-gateway
 local
 mdadm
