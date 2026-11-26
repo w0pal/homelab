@@ -143,10 +143,11 @@ with `lab-dvwa-db`.
 `hermes-gateway`, `local`, `mdadm`, `ntpd`, `paseo`, `portfolio-api`,
 `redis`, `sshd`, `tailscale`.
 
-**Boot order:** `cgroups` mounts cgroup2 first. The `local` runlevel then runs
-`/etc/local.d/01-podman-cgroup.start` and `/etc/local.d/90-podman.start`. The
-second script walks every file in `podman/` and calls `podman-compose up -d`
-on it, so a reboot brings the whole stack back without manual steps.
+**Boot:** `cgroups` mounts cgroup2, then the `local` runlevel runs
+`/etc/local.d/01-podman-cgroup.start` and `/etc/local.d/90-podman.start`.
+The second script reloads the Podman networks and starts every container that
+is not already running, so a reboot brings the whole stack back without manual
+steps.
 
 **Configs kept but not currently running:** the `hermes-agent`,
 `opencode-bot`, and `watchtower` containers. Watchtower is superseded by the
@@ -333,7 +334,7 @@ The Hermes cron job itself is not stored in this repo. It lives in the Hermes pr
 
 ### Podman boot recovery
 
-The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh` restores the cgroup2 mount before `scripts/podman-boot.sh` starts all compose projects from `podman/*.yml` at boot. The generated `bootstrap.sh` installs both scripts into `/etc/local.d` when run with `--containers`.
+The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh` restores the cgroup2 mount, then `scripts/podman-boot.sh` reloads the Podman networks and starts every container that is not already running. Compose files in `podman/` only create containers once, during bootstrap. The generated `bootstrap.sh` installs both scripts into `/etc/local.d` when run with `--containers`.
 
 ---
 
