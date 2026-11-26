@@ -22,47 +22,11 @@
   "dependencyDashboardTitle": "Renovate Dependency Dashboard",
   "packageRules": [
     {
-      "matchManagers": ["docker-compose"],
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
-      "platformAutomerge": true
-    },
-    {
-      "matchManagers": ["docker-compose"],
-      "matchUpdateTypes": ["minor"],
-      "automerge": true,
-      "platformAutomerge": true
-    },
-    {
-      "matchManagers": ["docker-compose"],
-      "matchUpdateTypes": ["major"],
-      "automerge": false,
-      "labels": ["major-update"]
-    },
-    {
       "matchManagers": ["github-actions"],
       "automerge": true,
       "platformAutomerge": true
-    },
-    {
-      "matchDatasources": ["docker"],
-      "groupName": "homelab-docker-images",
-      "labels": ["docker", "homelab"],
-      "schedule": ["after 2am on sunday"],
-      "matchPackageNames": [
-        "/^vaultwarden/server$/",
-        "/^jc21/nginx-proxy-manager$/",
-        "/^adguard/adguardhome$/",
-        "/^vulnerables/web-dvwa$/"
-      ]
     }
   ],
-  "docker-compose": {
-    "managerFilePatterns": [
-      "/^podman/.*\\.ya?ml$/",
-      "/^services/.*docker-compose\\.ya?ml$/"
-    ]
-  },
   "github-actions": {
     "managerFilePatterns": [
       "/.github/workflows/*.yml/",
