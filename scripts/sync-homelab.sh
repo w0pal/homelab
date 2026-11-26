@@ -61,10 +61,12 @@ fi
   echo "arch=$(uname -m)"
   . /etc/os-release 2>/dev/null || true
   echo "os=${ID:-unknown} ${VERSION_ID:-unknown}"
-  echo "docker_containers:"
+  echo "podman_containers:"
   managed=$( {
     find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##'
     printf '%s\n' homelab-fetch homelab-shell wordcraft-files wordcraft-web
+    # compose files that live in this repo, e.g. podman/podman-dvwa.yml
+    find "$REPO_DIR/podman" -maxdepth 1 -name '*.yml' -exec awk '/^[[:space:]]*container_name:/{print $2}' {} + 2>/dev/null
   } | sort )
   podman ps --format '{{.Names}}' 2>/dev/null | while IFS= read -r c; do
     [ -z "$c" ] && continue
@@ -73,7 +75,7 @@ fi
       case "$c" in "$m"|"$m"-*) printf '%s\n' "$c"; break ;; esac
     done
   done | sort || true
-  echo "docker_compose_dirs:"
+  echo "podman_compose_dirs:"
   find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##' | sort || true
   echo "openrc_default:"
   ls /etc/runlevels/default 2>/dev/null | sort || true

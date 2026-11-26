@@ -15,16 +15,16 @@ CUSTOM_INIT="9router
 hermes-gateway
 paseo
 portfolio-api"
-ACTIVE_SERVICES="9router
-adguardhome
-homelab-fetch
-homelab-shell
-nextcloud
-nginx-proxy-manager
-vaultwarden
-watchtower
-wordcraft"
-DEFAULT_RUNLEVEL="crond
+ACTIVE_SERVICES="/home/tomori/homelab/podman/podman-adguard.yml
+/home/tomori/homelab/podman/podman-dvwa.yml
+/home/tomori/homelab/podman/podman-fetch.yml
+/home/tomori/homelab/podman/podman-nextcloud.yml
+/home/tomori/homelab/podman/podman-npm.yml
+/home/tomori/homelab/podman/podman-shell.yml
+/home/tomori/homelab/podman/podman-vaultwarden.yml
+/home/tomori/homelab/podman/podman-wordcraft.yml"
+DEFAULT_RUNLEVEL="cgroups
+crond
 dnsmasq
 local
 mdadm
@@ -175,9 +175,13 @@ if [ "$PACKAGES" = 1 ]; then
 fi
 
 if [ "$CONTAINERS" = 1 ]; then
+  install_file "$REPO_DIR/scripts/podman-cgroup-boot.sh" /etc/local.d/01-podman-cgroup.start 755
+  install_file "$REPO_DIR/scripts/podman-boot.sh" /etc/local.d/90-podman.start 755
+  enable_service cgroups
+  enable_service local
   podman network exists shared-web >/dev/null 2>&1 || run podman network create shared-web
-  for svc in $ACTIVE_SERVICES; do
-    run podman-compose -f "$REPO_DIR/services/$svc/docker-compose.yml" up -d
+  for f in $ACTIVE_SERVICES; do
+    run podman-compose -f "$f" up -d
   done
 fi
 

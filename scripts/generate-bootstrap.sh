@@ -13,13 +13,9 @@ done
 custom=$(printf '%b' "$custom" | sort)
 
 services=""
-for d in "$REPO"/services/*; do
-  [ -f "$d/docker-compose.yml" ] || continue
-  name=$(basename "$d")
-  case "$name" in
-    dockge|cockpit|uptime-kuma|opencode-bot|hermes-agent) continue ;;
-  esac
-  services="${services}${name}\n"
+for f in "$REPO"/podman/*.yml; do
+  [ -f "$f" ] || continue
+  services="${services}${f}\n"
 done
 services=$(printf '%b' "$services" | sort)
 
@@ -191,9 +187,13 @@ if [ "$PACKAGES" = 1 ]; then
 fi
 
 if [ "$CONTAINERS" = 1 ]; then
+  install_file "$REPO_DIR/scripts/podman-cgroup-boot.sh" /etc/local.d/01-podman-cgroup.start 755
+  install_file "$REPO_DIR/scripts/podman-boot.sh" /etc/local.d/90-podman.start 755
+  enable_service cgroups
+  enable_service local
   podman network exists shared-web >/dev/null 2>&1 || run podman network create shared-web
-  for svc in $ACTIVE_SERVICES; do
-    run podman-compose -f "$REPO_DIR/services/$svc/docker-compose.yml" up -d
+  for f in $ACTIVE_SERVICES; do
+    run podman-compose -f "$f" up -d
   done
 fi
 

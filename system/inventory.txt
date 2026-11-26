@@ -2,10 +2,12 @@
 host_model=HP EliteDesk 800 G3 DM 35W
 arch=x86_64
 os=alpine 3.24.4
-docker_containers:
+podman_containers:
 adguardhome
 homelab-fetch
 homelab-shell
+lab-dvwa
+lab-dvwa-db
 nextcloud-app-1
 nextcloud-db-1
 nextcloud-redis-1
@@ -14,7 +16,7 @@ nginx-proxy-manager
 vaultwarden
 wordcraft-files
 wordcraft-web
-docker_compose_dirs:
+podman_compose_dirs:
 9router
 adguardhome
 hermes-agent
@@ -25,6 +27,7 @@ vaultwarden
 watchtower
 openrc_default:
 9router
+cgroups
 crond
 dnsmasq
 hermes-gateway
