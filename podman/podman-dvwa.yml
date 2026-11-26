@@ -1,0 +1,42 @@
+services:
+  db:
+    container_name: lab-dvwa-db
+    image: docker.io/library/mariadb:10.11
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    environment:
+      MYSQL_ROOT_PASSWORD: vulnpass
+      MYSQL_DATABASE: dvwa
+    volumes:
+      - dvwa_dvwa_db:/var/lib/mysql
+    networks:
+      dvwa_default:
+        aliases: [db]
+
+  dvwa:
+    container_name: lab-dvwa
+    image: docker.io/vulnerables/web-dvwa:latest
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: vulnpass
+      DB_DATABASE: dvwa
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      - db
+    networks:
+      dvwa_default:
+        aliases: [dvwa]
+
+networks:
+  dvwa_default:
+    external: true
+
+volumes:
+  dvwa_dvwa_db:
+    external: true

@@ -1,0 +1,26 @@
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    image: docker.io/vaultwarden/server:latest
+    restart: always
+    labels:
+      io.containers.autoupdate: registry
+    env_file: /home/tomori/containers/vaultwarden/.env
+    environment:
+      WEBSOCKET_ENABLED: "true"
+      SIGNUPS_ALLOWED: "false"
+      LOG_LEVEL: info
+      EXTENDED_LOGGING: "true"
+      ROCKET_ADDRESS: 0.0.0.0
+      ROCKET_PORT: "80"
+    volumes:
+      - /home/tomori/containers/vaultwarden/vw-data:/data
+    ports:
+      - "192.168.0.240:8080:80"
+    networks:
+      shared-web:
+        aliases: [vaultwarden]
+
+networks:
+  shared-web:
+    external: true

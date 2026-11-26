@@ -1,0 +1,26 @@
+services:
+  homelab-fetch:
+    container_name: homelab-fetch
+    image: homelab-fetch:local
+    restart: unless-stopped
+    env_file: /home/tomori/homelab/services/homelab-fetch/.env
+    volumes:
+      - /proc:/proc:ro
+      - /sys:/sys:ro
+      - /etc/os-release:/etc/os-release:ro
+      - /:/host:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,nosuid,noexec
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    cpus: 0.5
+    networks:
+      homelab-fetch_default: {}
+
+networks:
+  homelab-fetch_default:
+    external: true

@@ -1,0 +1,100 @@
+services:
+  db:
+    container_name: nextcloud-db-1
+    image: docker.io/library/mariadb:11.4
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    command: --transaction-isolation=READ-COMMITTED --log-bin=ROW --innodb-file-per-table=1
+    env_file: /home/tomori/containers/nextcloud/.env
+    environment:
+      MYSQL_HOST: db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+    networks:
+      nextcloud_backend:
+        aliases: [db]
+
+  redis:
+    container_name: nextcloud-redis-1
+    image: docker.io/library/redis:7-alpine
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    command: redis-server --appendonly yes
+    volumes:
+      - nextcloud_redis:/data
+    networks:
+      nextcloud_backend:
+        aliases: [redis]
+
+  app:
+    container_name: nextcloud-app-1
+    image: docker.io/library/nextcloud:stable-apache
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    depends_on:
+      - db
+      - redis
+    env_file: /home/tomori/containers/nextcloud/.env
+    environment:
+      MYSQL_HOST: db
+      NEXTCLOUD_DATA_DIR: /mnt/nextcloud-data
+      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud.lab
+      OVERWRITEHOST: nextcloud.lab
+      OVERWRITEPROTOCOL: https
+      PHP_MEMORY_LIMIT: 512M
+      PHP_UPLOAD_LIMIT: 2G
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - nextcloud_app:/var/www/html
+      - /home/tomori/containers/nextcloud/data:/mnt/nextcloud-data
+      - /home/tomori/storage:/mnt/host-storage
+      - /mnt/usb-sda:/mnt/usb-sda
+      - /mnt/backup/gdrive:/mnt/backup/gdrive
+      - /home/tomori/containers/nextcloud/apache-mpm.conf:/etc/apache2/mods-available/mpm_prefork.conf:ro
+    mem_limit: 2g
+    networks:
+      nextcloud_backend:
+        aliases: [app, nextcloud-app-1]
+      shared-web:
+        aliases: [nextcloud-app-1]
+
+  storage-watcher:
+    container_name: nextcloud-storage-watcher-1
+    image: docker.io/library/alpine:3.20
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    command: >-
+      sh -c "apk add --no-cache inotify-tools >/dev/null 2>&1 &&
+      inotifywait -m -r -e create,moved_to,close_write,delete,moved_from -q --format '%w%f' /watch
+      | while IFS= read -r p; do
+          if [ -d \"$p\" ]; then printf '%s\n' \"$p\" >> /queue/changed;
+          else dirname \"$p\" >> /queue/changed; fi
+        done"
+    volumes:
+      - /home/tomori/storage:/watch:ro
+      - /home/tomori/containers/nextcloud/scan-queue:/queue
+    networks:
+      nextcloud_default: {}
+
+networks:
+  nextcloud_backend:
+    external: true
+  nextcloud_default:
+    external: true
+  shared-web:
+    external: true
+
+volumes:
+  nextcloud_app:
+    external: true
+  nextcloud_db:
+    external: true
+  nextcloud_redis:
+    external: true

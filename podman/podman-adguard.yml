@@ -1,0 +1,11 @@
+services:
+  adguardhome:
+    container_name: adguardhome
+    image: docker.io/adguard/adguardhome:latest
+    restart: always
+    labels:
+      io.containers.autoupdate: registry
+    network_mode: host
+    volumes:
+      - /home/tomori/containers/adguardhome/work:/opt/adguardhome/work
+      - /home/tomori/containers/adguardhome/conf:/opt/adguardhome/conf

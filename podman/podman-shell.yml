@@ -1,0 +1,28 @@
+services:
+  homelab-shell:
+    container_name: homelab-shell
+    image: homelab-shell:local
+    restart: unless-stopped
+    hostname: takamatsu
+    env_file: /home/tomori/homelab/services/homelab-shell/.env
+    volumes:
+      - /proc:/proc:ro
+      - /sys:/sys:ro
+      - /etc/os-release:/etc/os-release:ro
+      - /:/host:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,nosuid,noexec
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    networks:
+      homelab-shell_default: {}
+
+networks:
+  homelab-shell_default:
+    external: true

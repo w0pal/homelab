@@ -1,0 +1,35 @@
+services:
+  web:
+    container_name: wordcraft-web
+    image: docker.io/library/nginx:alpine
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    command: ["nginx", "-g", "daemon off;"]
+    ports:
+      - "8090:80"
+    volumes:
+      - /home/tomori/storage/Projects/wordcraft-web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/tomori/storage/Projects/wordcraft-web/wordcraft-web-0.18.1:/usr/share/nginx/html:ro
+
+  files:
+    container_name: wordcraft-files
+    image: docker.io/library/node:22-alpine
+    restart: unless-stopped
+    labels:
+      io.containers.autoupdate: registry
+    command: ["node", "/server.mjs"]
+    environment:
+      DOC_ROOT: /home/tomori
+      FONTS_DIR: /fonts
+      PORT: 8091
+      APP_DIR: /app
+    ports:
+      - "8091:8091"
+    volumes:
+      - /home/tomori/storage/Projects/wordcraft-web/wordcraft-web-0.18.1:/app:ro
+      - /home/tomori/storage/Projects/wordcraft-web/fonts:/fonts:ro
+      - /home/tomori/storage/Projects/wordcraft-web/server.mjs:/server.mjs:ro
+      - /home/tomori:/home/tomori
+      - /mnt/backup:/home/tomori/wordcraft-disks/backup
+      - /mnt/usb-sda:/home/tomori/wordcraft-disks/usb

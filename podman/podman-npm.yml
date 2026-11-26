@@ -1,0 +1,21 @@
+services:
+  app:
+    container_name: nginx-proxy-manager
+    image: docker.io/jc21/nginx-proxy-manager:latest
+    restart: always
+    labels:
+      io.containers.autoupdate: registry
+    ports:
+      - "192.168.0.240:80:80"
+      - "192.168.0.240:443:443"
+      - "192.168.0.240:81:81"
+    volumes:
+      - /home/tomori/containers/nginx-proxy-manager/data:/data
+      - /home/tomori/containers/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    networks:
+      shared-web:
+        aliases: [nginx-proxy-manager]
+
+networks:
+  shared-web:
+    external: true
