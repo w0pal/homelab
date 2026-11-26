@@ -23,7 +23,7 @@ will be happy to do so.
 
 # Installed Apps
 
-The tables below show what is live on `takamatsu`. Retired experiments are listed near the end of this document.
+The tables below show what is live on `takamatsu`. Retired experiments live in `docs/retired-experiments.md`.
 
 <h2>🛡️ Infrastructure</h2>
 <table>
@@ -149,10 +149,6 @@ The second script reloads the Podman networks and starts every container that
 is not already running, so a reboot brings the whole stack back without manual
 steps.
 
-**Configs kept but not currently running:** the `hermes-agent`,
-`opencode-bot`, and `watchtower` containers. Watchtower is superseded by the
-weekly `podman auto-update` run in `scripts/podman-auto-update.sh`.
-
 ---
 
 ## Network Architecture
@@ -178,7 +174,6 @@ Direct ports:
 | AdGuard Home | 53 (DNS), 3000 (Web) | host | Built-in |
 | Nginx Proxy Manager | 80, 443, 81 (Admin) | `shared-web` | Auto |
 | Vaultwarden | 8080 (internal) | `shared-web` | `/alive` endpoint |
-| Watchtower | none | none | Config only; replaced by `podman auto-update` |
 | Nextcloud | 80 (via NPM) | `nextcloud_backend`, `shared-web` | MariaDB healthcheck |
 | Wordcraft | 8090, 8091 | bridge | none |
 | DVWA | 8081 (127.0.0.1) | `dvwa_default` | none |
@@ -246,7 +241,7 @@ podman-compose -f podman/podman-dvwa.yml up -d
 # Start the containers that already exist, same as boot
 sudo ./scripts/podman-boot.sh
 
-# Image refresh (weekly, replaces the watchtower container)
+# Image refresh (weekly, Podman auto-update)
 sudo /home/tomori/homelab/scripts/podman-auto-update.sh
 
 ```
@@ -300,6 +295,7 @@ homelab/
 │   └── etc/                             # Sanitized host config snapshot
 ├── docs/
 │   ├── ai-rules.md                      # Rules for AI agents working in this repo
+│   ├── retired-experiments.md           # Historical services and retired automation
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
 ├── configs/
 │   ├── zsh/                             # Shell config
@@ -329,7 +325,7 @@ Renovate runs on a schedule and groups related updates. Check `renovate.json` fo
 `scripts/podman-auto-update.sh` runs `podman auto-update` every Monday at
 03:00 Asia/Jakarta from root's crontab. Every compose file in `podman/`
 carries the `io.containers.autoupdate: registry` label, so the refresh picks
-them up. The old watchtower container is retired and no longer started.
+them up. Historical details are in `docs/retired-experiments.md`.
 
 ### AI GitOps sync
 
@@ -337,7 +333,7 @@ A Hermes cron job watches the host every five minutes. It runs `scripts/sync-hom
 
 The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It never commits secrets or real `.env` files. It skips runs when nothing changed.
 
-The old five-minute `auto-commit-homelab.sh` cron entry is retired. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
+Retired automation is documented in `docs/retired-experiments.md`. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
 
 Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit. The full rules are in `docs/ai-rules.md`.
 
@@ -372,8 +368,6 @@ Template files (`.env.example`) show required variables for local deployment.
   RAM: 8 GiB DDR4
   Storage: 229 GiB ext4
   ```
-
-The old ZTE B860H set-top box is retired. Dockge, Cockpit, and Uptime Kuma are also retired and no longer installed.
 
 - **OpenWrt** (router @ 192.168.0.1)
   ```
