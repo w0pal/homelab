@@ -57,7 +57,7 @@ The tables below show what is live on `takamatsu`. Retired experiments live in `
         <td>Lightweight Bitwarden-compatible password manager with WebSocket support for live sync</td>
     </tr>
     <tr>
-        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/docker.svg" width="32" /></td>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/podman.svg" width="32" /></td>
         <td>DVWA</td>
         <td>Damn Vulnerable Web Application lab with its own MariaDB, bound to 127.0.0.1:8081 so only the host can reach it</td>
     </tr>
@@ -261,15 +261,12 @@ homelab/
 │   ├── podman-shell.yml                 # Read-only shell worker
 │   ├── podman-vaultwarden.yml
 │   └── podman-wordcraft.yml             # Web app and file API
-├── services/                            # Build contexts and synced snapshots
+├── services/                            # Build contexts and env examples
 │   ├── adguardhome/
 │   │   └── AdGuardHome.yaml             # Main config (sync from running container)
 │   ├── homelab-fetch/                   # Dockerfile, collector.mjs, fastfetch.jsonc
 │   ├── homelab-shell/                   # Dockerfile, worker.py, fastfetch.jsonc
-│   └── <name>/                          # Synced compose snapshot and .env.example
-├── .github/
-│   └── workflows/
-│       └── auto-commit-config.yml       # Manual config sync
+│   └── <name>/                          # Build context and .env.example
 ├── init/
 │   ├── 9router.openrc
 │   ├── hermes-gateway.openrc
@@ -283,7 +280,6 @@ homelab/
 │   ├── hermes-cron-monitor.sh           # Cron monitor helper
 │   ├── hermes-ai-commit.prompt.txt      # Cron prompt
 │   ├── sync-homelab.sh                  # Snapshot live host config
-│   ├── auto-commit-homelab.sh           # Legacy sync helper
 │   ├── ensure-portfolio-api.sh          # Watchdog fallback
 │   ├── install-portfolio-api-service.sh
 │   ├── podman-boot.sh                   # Boot-time start for existing containers
@@ -312,13 +308,7 @@ homelab/
 
 ### Renovate Bot (Auto Dependency Updates)
 
-This repo uses [Renovate](https://github.com/renovatebot/renovate) to automatically create PRs for:
-
-- Container base image updates (`jc21/nginx-proxy-manager:latest`, `vaultwarden/server:latest`, etc.)
-- Docker Compose version updates
-- GitHub Actions updates
-
-Renovate runs on a schedule and groups related updates. Check `renovate.json` for configuration.
+This repo keeps a [Renovate](https://github.com/renovatebot/renovate) config for GitHub Actions updates. The auto-commit workflow was removed, so there are no workflow files left to update today. Container image refresh is handled by `podman auto-update` every Monday at 03:00. Check `renovate.json` for the remaining rules.
 
 ### Weekly image refresh
 
@@ -333,7 +323,7 @@ A Hermes cron job watches the host every five minutes. It runs `scripts/sync-hom
 
 The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It never commits secrets or real `.env` files. It skips runs when nothing changed.
 
-Retired automation is documented in `docs/retired-experiments.md`. The GitHub Actions workflow is now manual only. Use it from the Actions tab when you want a one-off pull from the host.
+Retired automation is documented in `docs/retired-experiments.md`.
 
 Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit. The full rules are in `docs/ai-rules.md`.
 
@@ -351,7 +341,7 @@ The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh` r
 
 **Never commit secrets to this repo!**
 
-The GitHub Actions run uses the built-in `GITHUB_TOKEN`. The AI GitOps cron uses the Git credentials already configured on `takamatsu`. No custom secret is required for either path.
+The AI GitOps cron uses the Git credentials already configured on `takamatsu`. No custom secret is required.
 
 Template files (`.env.example`) show required variables for local deployment.
 
