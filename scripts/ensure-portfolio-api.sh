@@ -1,6 +1,6 @@
 #!/bin/sh
 # Keep the local portfolio API alive behind the homelab-status Tailscale funnel.
-# A reboot restarts Docker and Tailscale via OpenRC, but the API lives in a tmux
+# A reboot restarts Podman and Tailscale via OpenRC, but the API lives in a tmux
 # session and does not come back by itself. This script restores both.
 
 exec 9>/tmp/portfolio-api-watchdog.lock

@@ -14,7 +14,7 @@ services/vaultwarden/vw-data/
 # AdGuard Home work directory
 services/adguardhome/work/
 
-# Docker volumes and data
+# Container volumes and data
 **/data/
 **/volumes/
 *.db
@@ -88,4 +88,3 @@ system/etc/wireguard/
 system/etc/cni/
 system/etc/ssh/ssh_host_*_key
 system/etc/ssh/*_key
-.docker.txt.swp

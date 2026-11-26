@@ -63,7 +63,7 @@ USAGE
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --apply) APPLY=1 ;;
-    --containers|--docker) CONTAINERS=1 ;;
+    --containers) CONTAINERS=1 ;;
     --packages) PACKAGES=1 ;;
     --with-fstab) FSTAB=1 ;;
     -h|--help) usage; exit 0 ;;
@@ -128,7 +128,6 @@ for rel in \
   etc/modules \
   etc/apk/repositories \
   etc/apk/world \
-  etc/conf.d/docker \
   etc/network/interfaces \
   etc/ssh/sshd_config \
   etc/local.d/wifi-powersave.start \

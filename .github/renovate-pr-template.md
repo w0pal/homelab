@@ -32,7 +32,7 @@ Available variables:
 {{/if}}
 
 {{#if isDigest}}
-This is a Docker image digest update (immutable tag).
+This is a container image digest update (immutable tag).
 {{/if}}
 
 ---
@@ -40,7 +40,7 @@ This is a Docker image digest update (immutable tag).
 <details>
 <summary>Renovate Configuration</summary>
 
-- **Schedule:** Every weekend (after 2am Sunday for Docker images)
+- **Schedule:** Every weekend (after 2am Sunday for container images)
 - **Automerge:** Enabled for patch/minor updates ✅
 - **Dependency Dashboard:** Available at [Repository Insights > Dependency Dashboard](https://github.com/{{repository}}/issues/{{dependencyDashboardIssue}})
 

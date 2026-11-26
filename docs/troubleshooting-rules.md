@@ -6,7 +6,7 @@ Use this when a homelab service or a public-facing site looks down. Read `docs/a
 
 1. Check the full chain before changing anything: producer, local API, reverse proxy, Tailscale funnel, Vercel rewrite, browser endpoint.
 2. Do not assume the repo path is the live path. Read compose labels and actual processes first.
-3. Do not assume Docker is the runtime. Confirm with `podman ps`, `docker ps`, and OpenRC runlevels.
+3. Confirm the runtime with `podman ps` and OpenRC runlevels.
 4. Do not expose secrets in commands, logs, chat, or docs. Use env files and placeholders.
 5. Do not restart or recreate a stateful container until data paths and volumes are verified.
 6. Do not call something fixed until the public endpoint returns the expected status. A healthy container behind a stale proxy rule is still broken.

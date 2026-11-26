@@ -6,7 +6,7 @@ Use these rules when an AI clones this repo or troubleshoots the host.
 
 1. Read `README.md`, `docs/troubleshooting-rules.md`, `docs/ai-rules.md`, and `init/README.md`.
 2. Read `system/inventory.txt` for the live snapshot. Treat it as evidence, not as a guess.
-3. Check the runtime before running commands. Use `podman ps`, `docker ps`, and `rc-update show default`.
+3. Check the runtime before running commands. Use `podman ps` and `rc-update show default`.
 4. Verify the live path from Compose labels or process arguments. Do not assume the repo path is the live path.
 5. Never read or print `.env` values. Env files are loaded by the service itself.
 

@@ -20,7 +20,6 @@ cjson
 cmake
 composer
 conmon
-containerd
 coreutils
 crun
 curl
@@ -30,8 +29,6 @@ dbus
 dmidecode
 dnsmasq
 doas
-docker
-docker-cli-compose
 dosfstools
 e2fsprogs
 exfatprogs

@@ -23,7 +23,6 @@ copy_file /etc/network/interfaces system/etc/network/interfaces
 copy_file /etc/apk/repositories system/etc/apk/repositories
 copy_file /etc/apk/world system/etc/apk/world
 copy_file /etc/modules system/etc/modules
-copy_file /etc/conf.d/docker system/etc/conf.d/docker
 copy_file /etc/ssh/sshd_config system/etc/ssh/sshd_config
 copy_file /etc/rc.conf system/etc/rc.conf
 copy_file /etc/local.d/wifi-powersave.start system/etc/local.d/wifi-powersave.start
@@ -63,9 +62,7 @@ fi
   echo "os=${ID:-unknown} ${VERSION_ID:-unknown}"
   echo "podman_containers:"
   managed=$( {
-    find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##'
     printf '%s\n' homelab-fetch homelab-shell wordcraft-files wordcraft-web
-    # compose files that live in this repo, e.g. podman/podman-dvwa.yml
     find "$REPO_DIR/podman" -maxdepth 1 -name '*.yml' -exec awk '/^[[:space:]]*container_name:/{print $2}' {} + 2>/dev/null
   } | sort )
   podman ps --format '{{.Names}}' 2>/dev/null | while IFS= read -r c; do
@@ -76,7 +73,7 @@ fi
     done
   done | sort || true
   echo "podman_compose_dirs:"
-  find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##' | sort || true
+  find "$REPO_DIR/podman" -maxdepth 1 -name '*.yml' -printf '%f\n' 2>/dev/null | sort || true
   echo "openrc_default:"
   ls /etc/runlevels/default 2>/dev/null | sort || true
   echo "custom_init:"
@@ -89,43 +86,6 @@ if [ -r /etc/crontabs/tomori ]; then
 else
   crontab -l > system/crontab.tomori 2>/dev/null || true
 fi
-
-# --- services: copy live compose files, sanitize secrets ---
-sanitize_compose() {
-  # redact obvious secrets/tokens/passwords in env/args lines
-  sed -E \
-    -e 's/(ADMIN_TOKEN=).*/\1${ADMIN_TOKEN}/' \
-    -e 's/(INITIAL_PASSWORD:).*/\1 "${INITIAL_PASSWORD}"/' \
-    -e 's/(JWT_SECRET:).*/\1 "${JWT_SECRET}"/' \
-    -e 's/(PASSWORD=).*/\1${PASSWORD}/' \
-    -e 's/(TOKEN=).*/\1${TOKEN}/' \
-    -e 's/(SECRET=).*/\1${SECRET}/'
-}
-
-sync_compose() { # src_dir name
-  local src=$1 name=$2
-  [ -f "$src/docker-compose.yml" ] || [ -f "$src/docker-compose.yaml" ] || return 0
-  mkdir -p "services/$name"
-  local f
-  for f in "$src"/docker-compose.yml "$src"/docker-compose.yaml "$src"/.env.example; do
-    [ -f "$f" ] || continue
-    case "$(basename "$f")" in
-      docker-compose.yml|docker-compose.yaml)
-        sanitize_compose < "$f" > "services/$name/$(basename "$f")"
-        ;;
-      .env.example)
-        cp "$f" "services/$name/.env.example"
-        ;;
-    esac
-  done
-}
-
-for dir in /home/tomori/containers/*; do
-  [ -f "$dir/docker-compose.yml" ] || [ -f "$dir/docker-compose.yaml" ] || continue
-  name=$(basename "$dir")
-  case "$name" in dockge|cockpit|uptime-kuma) continue ;; esac
-  sync_compose "$dir" "$name"
-done
 
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
 for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
@@ -146,8 +106,6 @@ if [ -f services/adguardhome/AdGuardHome.yaml ]; then
   sed -i 's/^\(  password:\).*/\1 ""/' services/adguardhome/AdGuardHome.yaml 2>/dev/null || true
 fi
 
-# remove junk
-rm -f docker.txt
 
 # keep the one-file bootstrap in sync with this snapshot
 ./scripts/generate-bootstrap.sh >/dev/null 2>&1 || true
