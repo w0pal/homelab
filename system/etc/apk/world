@@ -156,6 +156,9 @@ ncurses
 neovim
 nettle
 nfs-utils
+nmap
+nmap-ncat
+nmap-scripts
 nodejs
 npm
 npth
