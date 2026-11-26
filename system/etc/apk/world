@@ -44,7 +44,6 @@ flac
 fontconfig
 freetype
 fribidi
-fuse-overlayfs
 fzf
 g++
 gcc
@@ -211,8 +210,6 @@ php83-xmlwriter
 php83-zip
 pinentry
 pixman
-podman
-podman-compose
 poppler
 py3-pip
 python3
@@ -225,7 +222,6 @@ rsync
 sdl2
 sed
 shaderc
-shadow-subids
 shared-mime-info
 smartmontools
 snappy
