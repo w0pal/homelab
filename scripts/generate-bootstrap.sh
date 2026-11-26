@@ -193,7 +193,7 @@ if [ "$CONTAINERS" = 1 ]; then
   enable_service local
   podman network exists shared-web >/dev/null 2>&1 || run podman network create shared-web
   for f in $ACTIVE_SERVICES; do
-    run podman-compose -f "$f" up -d
+    run podman-compose -p "$USER_NAME" -f "$f" up -d
   done
 fi
 
