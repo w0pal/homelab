@@ -29,6 +29,12 @@ _zsh_editor() {
   return 1
 }
 
+du-top() {
+  local target="${1:-.}"
+  local limit="${2:-20}"
+  du -sh "$target"/* "$target"/.[!.]* 2>/dev/null | sort -hr | head -n "$limit"
+}
+
 _open_in_zsh_editor() {
   emulate -L zsh
   local editor=$(_zsh_editor)
