@@ -29,3 +29,7 @@ sudo rc-service <name> restart
 
 Do not store secrets in these files. Values that must stay private belong in
 `.env` files or the secret store.
+
+Do not add init scripts for internal, work, client, employer, professional, or
+non-homelab projects. AI helpers must skip those checkouts completely and never
+put their names or paths in tracked files or commit messages.
