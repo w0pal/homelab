@@ -294,6 +294,8 @@ homelab/
 ├── system/
 │   ├── inventory.txt                    # Stable live-state inventory
 │   └── etc/                             # Sanitized host config snapshot
+├── docs/
+│   └── troubleshooting-rules.md         # Chain checks when a service looks down
 ├── configs/
 │   ├── zsh/                             # Shell config
 │   └── nvim/                            # Neovim config
