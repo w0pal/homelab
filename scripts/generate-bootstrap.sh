@@ -37,7 +37,7 @@ set -eu
 
 REPO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 APPLY=0
-DOCKER=0
+CONTAINERS=0
 PACKAGES=0
 FSTAB=0
 USER_NAME=${SUDO_USER:-$(id -un)}
@@ -55,7 +55,7 @@ Usage: ./bootstrap.sh [options]
 
 Options:
   --apply        Write files. Without this, the script only prints its plan.
-  --docker       Create shared-web and start active compose services.
+  --containers   Create shared-web and start active compose services.
   --packages     Install packages listed in system/etc/apk/world.
   --with-fstab   Also copy fstab. Host UUIDs may not match, so this is opt-in.
   -h, --help     Show this help.
@@ -67,7 +67,7 @@ USAGE
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --apply) APPLY=1 ;;
-    --docker) DOCKER=1 ;;
+    --containers|--docker) CONTAINERS=1 ;;
     --packages) PACKAGES=1 ;;
     --with-fstab) FSTAB=1 ;;
     -h|--help) usage; exit 0 ;;
@@ -190,17 +190,17 @@ if [ "$PACKAGES" = 1 ]; then
   run apk add --no-cache $pkgs
 fi
 
-if [ "$DOCKER" = 1 ]; then
-  docker network inspect shared-web >/dev/null 2>&1 || run docker network create shared-web
+if [ "$CONTAINERS" = 1 ]; then
+  podman network exists shared-web >/dev/null 2>&1 || run podman network create shared-web
   for svc in $ACTIVE_SERVICES; do
-    run docker compose -f "$REPO_DIR/services/$svc/docker-compose.yml" up -d
+    run podman-compose -f "$REPO_DIR/services/$svc/docker-compose.yml" up -d
   done
 fi
 
 echo
 echo "Next steps:"
 echo "  review the plan, then run: sudo ./bootstrap.sh --apply"
-echo "  add --docker to start services, --packages to install apk packages"
+echo "  add --containers to start services, --packages to install apk packages"
 echo "  real secrets stay in local .env files, never in this repo"
 EOF
 } > "$TMP"

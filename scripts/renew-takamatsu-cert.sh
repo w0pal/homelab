@@ -19,16 +19,16 @@ trap 'rm -rf "$TMP"' EXIT
 
 CHANGED=0
 for f in fullchain.pem privkey.pem; do
-    if ! /usr/bin/docker exec "$CTR" cat "$CERTDIR/$f" 2>/dev/null | cmp -s - "$TMP/$f"; then
-        /usr/bin/docker cp "$TMP/$f" "$CTR:$CERTDIR/$f"
+    if ! /usr/bin/podman exec "$CTR" cat "$CERTDIR/$f" 2>/dev/null | cmp -s - "$TMP/$f"; then
+        /usr/bin/podman cp "$TMP/$f" "$CTR:$CERTDIR/$f"
         CHANGED=1
     fi
 done
 
 if [ "$CHANGED" = 1 ]; then
-    /usr/bin/docker exec "$CTR" sh -c "chmod 644 $CERTDIR/fullchain.pem; chmod 600 $CERTDIR/privkey.pem"
-    /usr/bin/docker exec "$CTR" nginx -t
-    /usr/bin/docker exec "$CTR" nginx -s reload
+    /usr/bin/podman exec "$CTR" sh -c "chmod 644 $CERTDIR/fullchain.pem; chmod 600 $CERTDIR/privkey.pem"
+    /usr/bin/podman exec "$CTR" nginx -t
+    /usr/bin/podman exec "$CTR" nginx -s reload
     echo "$(date '+%Y-%m-%dT%H:%M:%S%z') cert renewed, nginx reloaded"
 else
     echo "$(date '+%Y-%m-%dT%H:%M:%S%z') cert unchanged"

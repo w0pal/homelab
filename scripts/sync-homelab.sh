@@ -4,6 +4,9 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_DIR"
 
+# Rootless Podman needs a runtime dir; cron runs with a bare environment.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
 copy_file() { # src dst [mode]
   local src=$1 dst=$2 mode=${3:-}
   [ -r "$src" ] || return 0
@@ -63,7 +66,7 @@ fi
     find /home/tomori/containers -maxdepth 2 -name 'docker-compose.yml' -printf '%h\n' 2>/dev/null | sed 's#.*/##'
     printf '%s\n' homelab-fetch homelab-shell wordcraft-files wordcraft-web
   } | sort )
-  docker ps --format '{{.Names}}' 2>/dev/null | while IFS= read -r c; do
+  podman ps --format '{{.Names}}' 2>/dev/null | while IFS= read -r c; do
     [ -z "$c" ] && continue
     printf '%s\n' "$managed" | while IFS= read -r m; do
       [ -z "$m" ] && continue
