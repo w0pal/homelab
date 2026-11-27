@@ -32,6 +32,6 @@ depend() {
 }
 
 start_pre() {
-    export PATH="/home/tomori/.local/bin:$PATH"
+    export PATH="/home/tomori/.npm-global/bin:/home/tomori/.local/bin:$PATH"
     checkpath -f -o tomori:tomori -m 0644 "$output_log"
 }
