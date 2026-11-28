@@ -14,8 +14,8 @@
 name="paseo"
 description="Paseo daemon (local AI agent control plane)"
 
-command="/usr/bin/node"
-command_args="--disable-warning=DEP0040 {{HOMELAB_HOME}}/.npm-global/lib/node_modules/@getpaseo/cli/dist/index.js daemon run"
+command="{{HOMELAB_HOME}}/.nix-profile/bin/paseo"
+command_args="daemon run"
 command_user="{{HOMELAB_USER}}:{{HOMELAB_USER}}"
 directory="{{HOMELAB_HOME}}"
 

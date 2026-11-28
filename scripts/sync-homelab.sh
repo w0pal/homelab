@@ -35,8 +35,11 @@ fi
 # These tools come from the Nix profile. Keep them out of the apk snapshot so
 # a later sync cannot reintroduce duplicates. Use fixed-string matching so
 # package names such as g++ are not read as regex.
-nix_owned='btop chafa eza fastfetch fd fzf github-cli jq lazygit rclone ripgrep yazi yazi-cli zoxide binutils build-base cargo cmake composer dmidecode ffmpeg fio gcc g++ ghostscript go htop imagemagick imagemagick-libs inxi iw m4 make musl-dev neovim nmap nmap-ncat nmap-scripts pciutils poppler smartmontools speedtest-cli tesseract-ocr tree-sitter-cli usbutils'
-grep -v '^php83' system/etc/apk/world | grep -vxF $nix_owned > system/etc/apk/world.tmp
+nix_owned='btop chafa eza fastfetch fd fzf github-cli jq lazygit rclone ripgrep yazi yazi-cli zoxide binutils build-base cargo cmake composer dmidecode ffmpeg fio gcc g++ ghostscript go htop imagemagick imagemagick-libs inxi iw m4 make musl-dev neovim nmap nmap-ncat nmap-scripts nodejs npm pciutils poppler smartmontools speedtest-cli tesseract-ocr tmux tree-sitter-cli usbutils'
+grep -v '^php83' system/etc/apk/world | awk -v skip="$nix_owned" '
+  BEGIN { n = split(skip, a, " "); for (i = 1; i <= n; i++) s[a[i]] = 1 }
+  !($0 in s)
+' > system/etc/apk/world.tmp
 mv system/etc/apk/world.tmp system/etc/apk/world
 copy_file /etc/modules system/etc/modules
 copy_file /etc/ssh/sshd_config system/etc/ssh/sshd_config
@@ -57,11 +60,22 @@ for f in "$HOME_DIR"/.config/nvim/* "$HOME_DIR"/.config/nvim/.[!.]*; do
   copy_file "$f" "configs/nvim/$(basename "$f")"
 done
 
+# Refresh the pinned npm-global manifest from the live install.
+if [ -x "$HOME_DIR/.nix-profile/bin/node" ] && [ -f "$REPO_DIR/scripts/sync-npm-global.sh" ]; then
+  sh "$REPO_DIR/scripts/sync-npm-global.sh" >/dev/null 2>&1 || true
+fi
+
 # OpenRC service scripts we maintain
 for svc in 9router hermes-gateway paseo portfolio-api; do
   copy_file "/etc/init.d/$svc" "system/etc/init.d/$svc"
   copy_file "/etc/init.d/$svc" "init/$svc.openrc"
   for dst in "system/etc/init.d/$svc" "init/$svc.openrc"; do
+    sed -i -e "s|/usr/bin/node|$HOME_DIR/.nix-profile/bin/node|g" -e "s|/usr/bin/tailscale|$HOME_DIR/.nix-profile/bin/tailscale|g" "$dst" 2>/dev/null || true
+    if [ "$svc" = 9router ]; then
+      # The npm-global copy is newer than nixpkgs and handles its own updates.
+      sed -i -e "s|$HOME_DIR/.nix-profile/bin/9router|$HOME_DIR/.nix-profile/bin/node|g" \
+             -e "s|command_args=\"--no-browser --skip-update -t\"|command_args=\"$HOME_DIR/.npm-global/lib/node_modules/9router/cli.js --no-browser -t\"|g" "$dst" 2>/dev/null || true
+    fi
     sed -i -e "s|$HOME_DIR|{{HOMELAB_HOME}}|g" -e "s|$USER_NAME|{{HOMELAB_USER}}|g" "$dst" 2>/dev/null || true
   done
 done

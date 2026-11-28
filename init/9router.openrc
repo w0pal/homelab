@@ -1,8 +1,8 @@
 #!/sbin/openrc-run
 name="9router"
 description="9router local router service"
-command="/usr/bin/node"
-command_args="{{HOMELAB_HOME}}/.npm-global/lib/node_modules/9router/cli.js --no-browser --skip-update -t"
+command="{{HOMELAB_HOME}}/.nix-profile/bin/node"
+command_args="{{HOMELAB_HOME}}/.npm-global/lib/node_modules/9router/cli.js --no-browser -t"
 command_user="{{HOMELAB_USER}}:{{HOMELAB_USER}}"
 directory="{{HOMELAB_HOME}}"
 pidfile="/run/${RC_SVCNAME}.pid"

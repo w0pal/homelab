@@ -2,7 +2,7 @@
 
 name="portfolio-api"
 description="Portfolio dev API behind the homelab-status funnel"
-command="/usr/bin/node"
+command="{{HOMELAB_HOME}}/.nix-profile/bin/node"
 command_args="--env-file=.env scripts/dev-api.mjs"
 command_user="{{HOMELAB_USER}}:{{HOMELAB_USER}}"
 directory="{{HOMELAB_HOME}}/storage/Projects/portfolio-web"
@@ -22,7 +22,7 @@ start_pre() {
 }
 
 start_post() {
-	if ! /usr/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- '/homelab-status'; then
-		/bin/su {{HOMELAB_USER}} -s /bin/sh -c '/usr/bin/tailscale funnel --bg --https=443 --set-path=/homelab-status http://127.0.0.1:3001/api/homelab' >/dev/null 2>&1
+	if ! {{HOMELAB_HOME}}/.nix-profile/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- '/homelab-status'; then
+		/bin/su {{HOMELAB_USER}} -s /bin/sh -c '{{HOMELAB_HOME}}/.nix-profile/bin/tailscale funnel --bg --https=443 --set-path=/homelab-status http://127.0.0.1:3001/api/homelab' >/dev/null 2>&1
 	fi
 }

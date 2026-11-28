@@ -22,13 +22,13 @@ healthy() {
 
 if ! healthy; then
   echo "$(ts) API unhealthy, restarting $SESSION" >> "$LOG"
-  if /usr/bin/tmux has-session -t "$SESSION" 2>/dev/null; then
-    /usr/bin/tmux kill-session -t "$SESSION" >/dev/null 2>&1 || true
+  if $HOME_DIR/.nix-profile/bin/tmux has-session -t "$SESSION" 2>/dev/null; then
+    $HOME_DIR/.nix-profile/bin/tmux kill-session -t "$SESSION" >/dev/null 2>&1 || true
   fi
   /usr/bin/pkill -f 'node --env-file=.env scripts/dev-api.mjs' >/dev/null 2>&1 || true
   /bin/sleep 1
-  /usr/bin/tmux new-session -d -s "$SESSION" -x 120 -y 30 \
-    "cd $PROJECT && /usr/bin/npm run dev:api" >/dev/null 2>&1
+  $HOME_DIR/.nix-profile/bin/tmux new-session -d -s "$SESSION" -x 120 -y 30 \
+    "cd $PROJECT && $HOME_DIR/.nix-profile/bin/npm run dev:api" >/dev/null 2>&1
   /bin/sleep 4
   if healthy; then
     echo "$(ts) API healthy again" >> "$LOG"
@@ -37,9 +37,9 @@ if ! healthy; then
   fi
 fi
 
-if ! /usr/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- "$FUNNEL_PATH"; then
+if ! $HOME_DIR/.nix-profile/bin/tailscale funnel status 2>/dev/null | /bin/grep -q -- "$FUNNEL_PATH"; then
   echo "$(ts) funnel path missing, re-adding $FUNNEL_PATH" >> "$LOG"
-  /usr/bin/tailscale funnel --bg --https=443 \
+  $HOME_DIR/.nix-profile/bin/tailscale funnel --bg --https=443 \
     --set-path="$FUNNEL_PATH" http://127.0.0.1:3001/api/homelab \
     >> "$LOG" 2>&1
 fi
