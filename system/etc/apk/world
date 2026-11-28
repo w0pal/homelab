@@ -159,6 +159,7 @@ python3
 rav1e
 readline
 redis
+rsync
 sdl2
 sed
 shaderc

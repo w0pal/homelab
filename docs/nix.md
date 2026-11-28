@@ -4,7 +4,7 @@ This flake pins userland CLI tools and dev toolchains. It does not replace apk, 
 
 ## What is pinned
 
-`flake.nix` declares btop, binutils, cargo, chafa, cmake, composer, dmidecode, eza, fastfetch, fd, ffmpeg, fio, fzf, gh, ghostscript, go, gcc, htop, imagemagick, inxi, iw, jq, lazygit, m4, gnumake, neovim, nmap, pciutils, poppler-utils, rclone, ripgrep, rsync, smartmontools, speedtest-cli, tesseract, tree-sitter, usbutils, yazi, zoxide and php83. The dev shell adds Go, Node.js and Python without putting them in the host profile.
+`flake.nix` declares btop, binutils, cargo, chafa, cmake, composer, dmidecode, eza, fastfetch, fd, ffmpeg, fio, fzf, gh, ghostscript, go, gcc, htop, imagemagick, inxi, iw, jq, lazygit, m4, gnumake, neovim, nmap, pciutils, poppler-utils, rclone, ripgrep, smartmontools, speedtest-cli, tesseract, tree-sitter, usbutils, yazi, zoxide and php83. The dev shell adds Go, Node.js and Python without putting them in the host profile.
 
 `flake.lock` is the pin. Commit it whenever it changes. A rebuild from the same lockfile gets the same package versions on this host or another one.
 
@@ -30,7 +30,7 @@ If Nix warns that `/nix/var/nix` does not exist, create `/nix/var/nix` and `/nix
 
 ## What stays on apk
 
-The remaining `system/etc/apk/world` entries are boot, firmware, init, network, container and basic shell packages. Examples: `linux-lts`, `linux-firmware-*`, `grub-efi`, `mdadm`, `nftables`, `dnsmasq`, `openssh`, `tailscale`, the Podman stack, `nodejs` and `npm` for the OpenRC services, `/usr/bin/tmux` for `ensure-portfolio-api.sh`, and basic commands such as `lsblk`, `coreutils`, `sed`, `grep`, `tar`, `curl` and `git`.
+The remaining `system/etc/apk/world` entries are boot, firmware, init, network, container and basic shell packages. Examples: `linux-lts`, `linux-firmware-*`, `grub-efi`, `mdadm`, `nftables`, `dnsmasq`, `openssh`, `tailscale`, the Podman stack, `nodejs` and `npm` for the OpenRC services, `/usr/bin/tmux` for `ensure-portfolio-api.sh`, and basic commands such as `lsblk`, `coreutils`, `sed`, `grep`, `tar`, `curl`, `git` and `rsync`. The 03:00 Nextcloud backup cron calls `rsync` with cron's default PATH, so rsync stays on apk.
 
 `sync-homelab.sh` filters the Nix-owned entries out of the apk snapshot so the GitOps cron cannot reintroduce them. Library packages that are still needed by retained apk packages remain as apk dependencies, not as duplicate userland commands.
 
