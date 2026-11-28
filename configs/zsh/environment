@@ -9,7 +9,7 @@ export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.sdkman/bin:$HOME/.
 export PATH="/var/home/w0pal/.local/bin:$PATH"
 
 # Opencode
-export PATH=/home/tomori/.opencode/bin:$PATH
+export PATH=$HOME/.opencode/bin:$PATH
 
 if (( $+commands[nvim] )); then
   export EDITOR="nvim"

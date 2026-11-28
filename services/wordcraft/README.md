@@ -7,4 +7,4 @@
 podman-compose -f podman/podman-wordcraft.yml up -d
 ```
 
-Static assets and `server.mjs` live under `/home/tomori/Projects/wordcraft-web`.
+Static assets and `server.mjs` live under `$HOME/Projects/wordcraft-web`.

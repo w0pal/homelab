@@ -3,7 +3,7 @@ services:
     container_name: homelab-fetch
     image: homelab-fetch:local
     restart: unless-stopped
-    env_file: /home/tomori/homelab/services/homelab-fetch/.env
+    env_file: ${HOME}/homelab/services/homelab-fetch/.env
     volumes:
       - /proc:/proc:ro
       - /sys:/sys:ro

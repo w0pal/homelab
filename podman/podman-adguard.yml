@@ -7,5 +7,5 @@ services:
       io.containers.autoupdate: registry
     network_mode: host
     volumes:
-      - /home/tomori/containers/adguardhome/work:/opt/adguardhome/work
-      - /home/tomori/containers/adguardhome/conf:/opt/adguardhome/conf
+      - ${HOME}/containers/adguardhome/work:/opt/adguardhome/work
+      - ${HOME}/containers/adguardhome/conf:/opt/adguardhome/conf

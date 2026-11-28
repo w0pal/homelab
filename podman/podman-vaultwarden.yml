@@ -5,7 +5,7 @@ services:
     restart: always
     labels:
       io.containers.autoupdate: registry
-    env_file: /home/tomori/containers/vaultwarden/.env
+    env_file: ${HOME}/containers/vaultwarden/.env
     environment:
       WEBSOCKET_ENABLED: "true"
       SIGNUPS_ALLOWED: "false"
@@ -14,7 +14,7 @@ services:
       ROCKET_ADDRESS: 0.0.0.0
       ROCKET_PORT: "80"
     volumes:
-      - /home/tomori/containers/vaultwarden/vw-data:/data
+      - ${HOME}/containers/vaultwarden/vw-data:/data
     ports:
       - "192.168.0.240:8080:80"
     networks:

@@ -4,7 +4,7 @@ services:
     image: homelab-shell:local
     restart: unless-stopped
     hostname: takamatsu
-    env_file: /home/tomori/homelab/services/homelab-shell/.env
+    env_file: ${HOME}/homelab/services/homelab-shell/.env
     volumes:
       - /proc:/proc:ro
       - /sys:/sys:ro

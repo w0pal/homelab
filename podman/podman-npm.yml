@@ -10,8 +10,8 @@ services:
       - "192.168.0.240:443:443"
       - "192.168.0.240:81:81"
     volumes:
-      - /home/tomori/containers/nginx-proxy-manager/data:/data
-      - /home/tomori/containers/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - ${HOME}/containers/nginx-proxy-manager/data:/data
+      - ${HOME}/containers/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
     networks:
       shared-web:
         aliases: [nginx-proxy-manager]

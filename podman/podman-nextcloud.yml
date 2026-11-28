@@ -6,7 +6,7 @@ services:
     labels:
       io.containers.autoupdate: registry
     command: --transaction-isolation=READ-COMMITTED --log-bin=ROW --innodb-file-per-table=1
-    env_file: /home/tomori/containers/nextcloud/.env
+    env_file: ${HOME}/containers/nextcloud/.env
     environment:
       MYSQL_HOST: db
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
@@ -39,7 +39,7 @@ services:
     depends_on:
       - db
       - redis
-    env_file: /home/tomori/containers/nextcloud/.env
+    env_file: ${HOME}/containers/nextcloud/.env
     environment:
       MYSQL_HOST: db
       NEXTCLOUD_DATA_DIR: /mnt/nextcloud-data
@@ -52,11 +52,11 @@ services:
       REDIS_PORT: 6379
     volumes:
       - nextcloud_app:/var/www/html
-      - /home/tomori/containers/nextcloud/data:/mnt/nextcloud-data
-      - /home/tomori/storage:/mnt/host-storage
+      - ${HOME}/containers/nextcloud/data:/mnt/nextcloud-data
+      - ${HOME}/storage:/mnt/host-storage
       - /mnt/usb-sda:/mnt/usb-sda
       - /mnt/backup/gdrive:/mnt/backup/gdrive
-      - /home/tomori/containers/nextcloud/apache-mpm.conf:/etc/apache2/mods-available/mpm_prefork.conf:ro
+      - ${HOME}/containers/nextcloud/apache-mpm.conf:/etc/apache2/mods-available/mpm_prefork.conf:ro
     mem_limit: 2g
     networks:
       nextcloud_backend:
@@ -78,8 +78,8 @@ services:
           else dirname \"$p\" >> /queue/changed; fi
         done"
     volumes:
-      - /home/tomori/storage:/watch:ro
-      - /home/tomori/containers/nextcloud/scan-queue:/queue
+      - ${HOME}/storage:/watch:ro
+      - ${HOME}/containers/nextcloud/scan-queue:/queue
     networks:
       nextcloud_default: {}
 

@@ -27,4 +27,4 @@ if [[ -n "$TMUX" ]]; then
 fi
 
 # Mosh convenience: connect and auto-attach tmux (always show predictions for low-latency feel)
-alias mt='MOSH_PREDICTION_DISPLAY=always mosh tomori@takamatsu -- tmux new -A -s main'
+alias mt='MOSH_PREDICTION_DISPLAY=always mosh $(id -un)@takamatsu -- tmux new -A -s main'
