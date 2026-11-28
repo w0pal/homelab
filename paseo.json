@@ -1,0 +1,15 @@
+{
+  "metadataGeneration": {
+    "branchName": {
+      "instructions": "Use short lowercase kebab-case names such as docs/readme, chore/init, fix/service-name. Keep names user-agnostic and never include a private checkout or client identifier."
+    },
+    "commitMessage": {
+      "instructions": "Use Conventional Commits with a one-line subject and a body that names the changed files and explains the change. Never include secrets, real .env values, tokens, or private checkout identifiers. The Hermes GitOps cron owns commits in the main checkout; do not commit here unless the user asks."
+    }
+  },
+  "scripts": {
+    "repo-monitor": {
+      "command": "./scripts/repo-monitor.sh"
+    }
+  }
+}
