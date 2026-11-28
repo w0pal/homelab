@@ -78,6 +78,10 @@ the repo is pending. A failed run is retried on the next tick instead of being
 suppressed by identical output, and a same-size file edit still registers as a
 change. Clean sync state produces no output and no agent run.
 
+The installed copy in `~/.hermes/scripts` resolves the repo from the cron
+workdir, with `$HOME/homelab` as fallback. It does not derive the repo from its
+own script path, so it cannot end up watching the Hermes profile instead.
+
 ## Health check
 
 The command-by-command check is in
