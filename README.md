@@ -125,6 +125,11 @@ The tables below show what is live on `takamatsu`. Retired experiments live in `
         <td>9router / portfolio-api</td>
         <td>Routing daemon and portfolio API, both managed by OpenRC</td>
     </tr>
+    <tr>
+        <td><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/server.svg" width="32" /></td>
+        <td>paseo</td>
+        <td>Paseo daemon (local AI agent control plane)</td>
+    </tr>
 </table>
 
 ## Current runtime
