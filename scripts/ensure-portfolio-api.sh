@@ -6,11 +6,14 @@
 exec 9>/tmp/portfolio-api-watchdog.lock
 /usr/bin/flock -n 9 || exit 0
 
-PROJECT=/home/tomori/storage/Projects/portfolio-web
+USER_NAME=${SUDO_USER:-$(id -un)}
+HOME_DIR=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
+[ -n "$HOME_DIR" ] || HOME_DIR="/home/$USER_NAME"
+PROJECT=$HOME_DIR/storage/Projects/portfolio-web
 SESSION=portfolio-api
 HEALTH=http://127.0.0.1:3001/api/homelab
 FUNNEL_PATH=/homelab-status
-LOG=/home/tomori/.local/log/portfolio-api-watchdog.log
+LOG=$HOME_DIR/.local/log/portfolio-api-watchdog.log
 ts() { /bin/date '+%F %T'; }
 
 healthy() {

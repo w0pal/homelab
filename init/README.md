@@ -15,11 +15,11 @@ scripts are not copied here. The four active custom services are also in the
 older `hermes-gateway` file. It is not active and is intentionally not stored
 here.
 
-All four services run as `tomori:tomori` under `supervise-daemon`. Restore one
+All four services run as the user detected at install time under `supervise-daemon`. Restore one
 with root access:
 
 ```sh
-sudo install -m 0755 /home/tomori/homelab/init/<name>.openrc /etc/init.d/<name>
+sudo install -m 0755 $HOME/homelab/init/<name>.openrc /etc/init.d/<name>
 sudo rc-update add <name> default
 sudo rc-service <name> restart
 ```

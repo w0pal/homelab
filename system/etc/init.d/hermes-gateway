@@ -2,27 +2,27 @@
 
 name="hermes-gateway"
 description="Hermes Agent messaging gateway (profile default)"
-command="/home/tomori/.hermes/hermes-agent/hermes"
+command="{{HOMELAB_HOME}}/.hermes/hermes-agent/hermes"
 command_args="--profile default gateway run --quiet"
-command_user="tomori:tomori"
+command_user="{{HOMELAB_USER}}:{{HOMELAB_USER}}"
 pidfile="/run/${RC_SVCNAME}.pid"
-output_log="/home/tomori/.hermes/gateway-service.log"
-error_log="/home/tomori/.hermes/gateway-service.log"
-directory="/home/tomori/.hermes/hermes-agent"
+output_log="{{HOMELAB_HOME}}/.hermes/gateway-service.log"
+error_log="{{HOMELAB_HOME}}/.hermes/gateway-service.log"
+directory="{{HOMELAB_HOME}}/.hermes/hermes-agent"
 supervise_daemon_args="--respawn-delay 5 --respawn-max 0 --respawn-period 0"
 supervisor="supervise-daemon"
 
 start_pre() {
 	# reapply self-bot patches (idempotent, survives hermes updates)
-	su tomori -s /bin/sh -c '/home/tomori/.hermes/selfbot-patch.sh' >/dev/null 2>&1
+	su {{HOMELAB_USER}} -s /bin/sh -c '{{HOMELAB_HOME}}/.hermes/selfbot-patch.sh' >/dev/null 2>&1
 	# clear a stale restart-loop breaker left by a rapid outage/respawn sequence
-	rm -f /home/tomori/.hermes/gateway/restart_loop.json
+	rm -f {{HOMELAB_HOME}}/.hermes/gateway/restart_loop.json
 	# wait for DNS before connecting to Discord (net can be up before resolver is ready)
 	for i in 1 2 3 4 5 6 7 8 9 10; do
 		getent ahostsv4 discord.com >/dev/null 2>&1 && break
 		sleep 3
 	done
-	checkpath -f -o tomori:tomori -m 0644 "$output_log"
+	checkpath -f -o {{HOMELAB_USER}}:{{HOMELAB_USER}} -m 0644 "$output_log"
 }
 
 depend() {
