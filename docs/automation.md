@@ -15,6 +15,18 @@ This page covers the recurring host tasks that are not tied to those two.
 carries the `io.containers.autoupdate=registry` label, so the refresh picks
 them up.
 
+## Weekly local cleanup
+
+`scripts/cleanup-homelab.sh --apply` runs every Sunday at 03:00 Asia/Jakarta
+from tomori's crontab. It removes the failed Nix chroot store if present,
+wipes old Nix profile generations and runs `nix store gc`, removes orphaned
+npm-global directories and the duplicate project-style `node_modules` tree,
+and deletes images that no container references. It never removes containers.
+Dry run is the default: `./scripts/cleanup-homelab.sh`.
+
+apk cache cleaning needs root, so the script skips that step unless it is run
+with `doas`.
+
 ## Podman boot recovery
 
 The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh`
