@@ -222,6 +222,10 @@ sudo ./bootstrap.sh --apply
 sudo ./bootstrap.sh --apply --packages --containers
 ```
 
+### Pinned CLI tools (Nix)
+
+A small flake pins userland tools such as btop, eza, fd, ripgrep and yazi. apk still owns the base system, init and services. See `docs/nix.md`.
+
 ### Individual Service Commands
 
 Every project lives in its own file under `podman/`. Run one with
@@ -294,6 +298,8 @@ homelab/
 │   ├── portfolio-api.openrc
 │   └── README.md
 ├── bootstrap.sh                         # Generated one-file host bootstrap
+├── flake.nix                            # Pinned CLI tools
+├── flake.lock                           # Locked nixpkgs revision
 ├── scripts/
 │   ├── generate-bootstrap.sh            # Regenerates bootstrap.sh
 │   ├── setup-hermes-cron.sh             # Restores the AI GitOps cron job
@@ -314,6 +320,7 @@ homelab/
 │   ├── automation.md                    # Automation overview and host boot jobs
 │   ├── bot.md                           # Renovate dependency updates
 │   ├── issues.md                        # Known gotchas and failure checks
+│   ├── nix.md                           # Pinned CLI tools and glibc notes
 │   ├── auto-commit.md                   # GitOps cron and Paseo repo monitor
 │   ├── retired-experiments.md           # Removed services and jobs
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
