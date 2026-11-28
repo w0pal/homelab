@@ -333,7 +333,7 @@ The Hermes cron job itself is not stored in this repo. It lives in the Hermes pr
 
 ### Monitoring the repo from Paseo
 
-A Paseo workspace shows the history of its own agents and sessions, not the full git log of the checkout. The homelab git history is complete (`git rev-list --count HEAD` reports every commit, and the clone is not shallow); use git or the monitor script when you want the whole picture.
+A Paseo workspace shows the history of its own agents and sessions, not the full git log of the checkout. Its **Changes → Commits** panel is a diff against the workspace base: on a synced `main` with no workspace commits on top, `Commits 0` and `No commits ahead of base yet` are the expected result, not a broken or empty repository. This filtering is intentional upstream ([issue #4882](https://github.com/getpaseo/paseo/issues/4882)); a repository-wide history view has only been requested, not shipped ([discussion #7250](https://github.com/getpaseo/paseo/discussions/7250)). The homelab git history is complete (`git rev-list --count HEAD` reports every commit, and the clone is not shallow); use git or the monitor script when you want the whole picture.
 
 `scripts/repo-monitor.sh` is a read-only report: branch and sync state, dirty files, the full commit graph, branches, the GitOps cron status and recent runs, and HTTP status for the local API, funnel, public API, and public page. Set `LIMIT=30` to shorten the commit graph.
 
