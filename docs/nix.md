@@ -16,7 +16,7 @@ zsh puts `$HOME/.nix-profile/bin` ahead of the apk paths. The Nix versions of th
 
 zsh also adds `$HOME/.nix-profile/share/zsh/site-functions` to `fpath`, so completions keep working after the apk completion packages are removed.
 
-The `gh` wrappers in `configs/local-bin/` select the GitHub account from the repo owner. They now call the Nix binary instead of the removed `/usr/bin/gh`.
+The `gh` wrappers in `configs/local-bin/` select the GitHub account from the repo owner. They now call the Nix binary instead of the removed `/usr/bin/gh`. They read tokens from `gh auth token` at runtime. Never hardcode a token in those scripts.
 
 Install or refresh the profile from the repo:
 
