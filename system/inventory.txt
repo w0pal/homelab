@@ -16,6 +16,8 @@ nginx-proxy-manager
 vaultwarden
 wordcraft-files
 wordcraft-web
+unmanaged_container_count: 1
+unmanaged_container_fingerprint: 73009fcfb7792a9a
 podman_compose_dirs:
 podman-adguard.yml
 podman-dvwa.yml
