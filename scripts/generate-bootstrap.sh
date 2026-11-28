@@ -233,7 +233,10 @@ if [ "$PACKAGES" = 1 ]; then
     echo "skip Nix profile: nix binary not found"
   fi
   # Install the npm-global CLIs that are not in nixpkgs from the pinned manifest.
-  run_as_user "\"$HOME_DIR/.nix-profile/bin/npm\" install --prefix \"$HOME_DIR/.npm-global\" --no-audit --no-fund"
+  # --global is required: without it npm installs a project-style node_modules
+  # tree under the prefix instead of prefix/lib/node_modules.
+  pkgs=$("$HOME_DIR/.nix-profile/bin/node" -e 'const p=require(process.argv[1]); console.log(Object.entries(p.dependencies).map(([k,v])=>k+"@"+v).join(" "))' "$HOME_DIR/.npm-global/package.json")
+  run_as_user "\"$HOME_DIR/.nix-profile/bin/npm\" install -g --prefix \"$HOME_DIR/.npm-global\" --no-audit --no-fund $pkgs"
   run_as_user "\"$HOME_DIR/.nix-profile/bin/npm\" install-scripts approve --all --allow-scripts-pin --prefix \"$HOME_DIR/.npm-global\""
 fi
 
