@@ -1,0 +1,14 @@
+
+# Hermes gateway auto-start + keep-alive
+
+# 9router auto-start + keep-alive
+
+# Hermes watchdog: DNS-aware revive of messaging gateway
+@reboot $HOME/.hermes/watchdog.sh >> $HOME/.hermes/logs/watchdog.log 2>&1
+*/2 * * * * $HOME/.hermes/watchdog.sh >> $HOME/.hermes/logs/watchdog.log 2>&1
+
+# Weekly renewal of the tailscale-issued cert for NPM proxy host 7 (Vaultwarden LAN)
+17 4 * * 1 $HOME/homelab/scripts/renew-takamatsu-cert.sh >> $HOME/.local/log/takamatsu-cert.log 2>&1
+
+*/1 * * * * $HOME/containers/nextcloud/scan-host-storage.sh >> $HOME/containers/nextcloud/scan-cron.log 2>&1
+0 3 * * * $HOME/containers/nextcloud/backup-to-mirror-gentle.sh >> $HOME/containers/nextcloud/backup-mirror.log 2>&1

@@ -6,6 +6,10 @@ cd "$REPO_DIR"
 
 # Rootless Podman needs a runtime dir; cron runs with a bare environment.
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+USER_NAME=${SUDO_USER:-$(id -un)}
+HOME_DIR=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
+[ -n "$HOME_DIR" ] || HOME_DIR="/home/$USER_NAME"
+
 
 copy_file() { # src dst [mode]
   local src=$1 dst=$2 mode=${3:-}
@@ -30,12 +34,12 @@ copy_file /etc/dnsmasq.conf system/etc/dnsmasq.conf
 copy_file /etc/os-release system/etc/os-release
 
 # User shell and editor config (text only, no history or secrets)
-copy_file /home/tomori/.zshrc configs/zsh/.zshrc
-for f in /home/tomori/.config/zsh/* /home/tomori/.config/zsh/.[!.]*; do
+copy_file "$HOME_DIR/.zshrc" configs/zsh/.zshrc
+for f in "$HOME_DIR"/.config/zsh/* "$HOME_DIR"/.config/zsh/.[!.]*; do
   [ -f "$f" ] || continue
   copy_file "$f" "configs/zsh/$(basename "$f")"
 done
-for f in /home/tomori/.config/nvim/* /home/tomori/.config/nvim/.[!.]*; do
+for f in "$HOME_DIR"/.config/nvim/* "$HOME_DIR"/.config/nvim/.[!.]*; do
   [ -f "$f" ] || continue
   case "$(basename "$f")" in .git|data|lazy-lock.json) continue ;; esac
   copy_file "$f" "configs/nvim/$(basename "$f")"
@@ -45,7 +49,11 @@ done
 for svc in 9router hermes-gateway paseo portfolio-api; do
   copy_file "/etc/init.d/$svc" "system/etc/init.d/$svc"
   copy_file "/etc/init.d/$svc" "init/$svc.openrc"
+  for dst in "system/etc/init.d/$svc" "init/$svc.openrc"; do
+    sed -i -e "s|$HOME_DIR|{{HOMELAB_HOME}}|g" -e "s|$USER_NAME|{{HOMELAB_USER}}|g" "$dst" 2>/dev/null || true
+  done
 done
+sed -i -e "s|$HOME_DIR|\$HOME|g" -e "s|$USER_NAME@|\$(id -un)@|g" configs/zsh/* 2>/dev/null || true
 
 # runlevels (default)
 if [ -d /etc/runlevels/default ]; then
@@ -81,14 +89,18 @@ fi
 } > system/inventory.txt
 
 # user crontab (fallback to crontab -l)
-if [ -r /etc/crontabs/tomori ]; then
-  copy_file /etc/crontabs/tomori system/crontab.tomori
+if [ -r "/etc/crontabs/$USER_NAME" ]; then
+  copy_file "/etc/crontabs/$USER_NAME" system/crontab
 else
-  crontab -l > system/crontab.tomori 2>/dev/null || true
+  crontab -l > system/crontab 2>/dev/null || true
 fi
 
+# Sanitize: remove entries pointing at non-managed checkouts and raw home paths.
+awk '/^[[:space:]]*(#|$)/ || /(\$HOME|\/home\/[^ ]+)\/(homelab|containers|\.hermes|\.local|storage|\.npm-global)([ \/]|$)/' system/crontab > system/crontab.tmp && mv system/crontab.tmp system/crontab
+sed -i -e "s|$HOME_DIR|\$HOME|g" -e "s|$USER_NAME@|\$(id -un)@|g" system/crontab
+
 # adguard runtime config (sanitized) if readable (repo copy kept otherwise)
-for agh in /home/tomori/containers/adguardhome/conf/AdGuardHome.yaml /home/tomori/containers/adguardhome/AdGuardHome.yaml; do
+for agh in "$HOME_DIR"/containers/adguardhome/conf/AdGuardHome.yaml "$HOME_DIR"/containers/adguardhome/AdGuardHome.yaml; do
   if [ -r "$agh" ]; then
     cp "$agh" services/adguardhome/AdGuardHome.yaml
     break

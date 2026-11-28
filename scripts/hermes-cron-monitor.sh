@@ -3,10 +3,10 @@
 # Refresh the snapshot, then emit a stable change summary. Hermes suppresses the
 # agent run when this output is byte-for-byte unchanged, so keep timestamps out.
 set -eu
-REPO=/home/tomori/homelab
+REPO=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
-/home/tomori/homelab/scripts/sync-homelab.sh >/dev/null 2>&1 || true
-/home/tomori/homelab/scripts/generate-bootstrap.sh >/dev/null 2>&1 || true
+$REPO/scripts/sync-homelab.sh >/dev/null 2>&1 || true
+$REPO/scripts/generate-bootstrap.sh >/dev/null 2>&1 || true
 
 cd "$REPO"
 if git diff --quiet && git diff --cached --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
