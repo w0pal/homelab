@@ -1,0 +1,14 @@
+services:
+  kanaos:
+    container_name: kanaos
+    image: ghcr.io/revanandaxd/kanaos:latest
+    ports:
+      - "3008:8080"
+    environment:
+      PORT: 8080
+      CONFIG_PATH: /app/config/service.yml
+      DOCKER_CACHE_TTL: 3s
+    volumes:
+      - ${HOME}/.local/share/podman/podman.sock:/var/run/docker.sock:ro
+      - ${HOME}/homelab/services/kanaos/config:/app/config:ro
+    restart: unless-stopped

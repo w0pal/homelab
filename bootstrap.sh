@@ -19,6 +19,7 @@ portfolio-api"
 ACTIVE_SERVICES="podman/podman-adguard.yml
 podman/podman-dvwa.yml
 podman/podman-fetch.yml
+podman/podman-kanaos.yml
 podman/podman-nextcloud.yml
 podman/podman-npm.yml
 podman/podman-shell.yml
