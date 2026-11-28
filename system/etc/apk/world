@@ -238,6 +238,7 @@ sqlite
 svt-av1
 tailscale
 tar
+tesseract-ocr
 tmux
 tree-sitter-cli
 unzip
