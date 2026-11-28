@@ -40,7 +40,6 @@
         poppler-utils
         rclone
         ripgrep
-        rsync
         smartmontools
         speedtest-cli
         tesseract
