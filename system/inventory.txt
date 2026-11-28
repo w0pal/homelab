@@ -6,6 +6,7 @@ podman_containers:
 adguardhome
 homelab-fetch
 homelab-shell
+kanaos
 lab-dvwa
 lab-dvwa-db
 nextcloud-app-1
@@ -16,12 +17,13 @@ nginx-proxy-manager
 vaultwarden
 wordcraft-files
 wordcraft-web
-unmanaged_container_count: 1
-unmanaged_container_fingerprint: 73009fcfb7792a9a
+unmanaged_container_count: 0
+unmanaged_container_fingerprint: 01ba4719c80b6fe9
 podman_compose_dirs:
 podman-adguard.yml
 podman-dvwa.yml
 podman-fetch.yml
+podman-kanaos.yml
 podman-nextcloud.yml
 podman-npm.yml
 podman-shell.yml

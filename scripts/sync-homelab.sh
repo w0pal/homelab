@@ -72,8 +72,11 @@ fi
   . /etc/os-release 2>/dev/null || true
   echo "os=${ID:-unknown} ${VERSION_ID:-unknown}"
 
+  # Approved homelab services are hardcoded here so a restart of the dashboard
+  # does not look like an unknown container. Anything else running from outside
+  # the repo is reported by count and fingerprint only.
   managed_list=$( {
-    printf '%s\n' homelab-fetch homelab-shell wordcraft-files wordcraft-web
+    printf '%s\n' homelab-fetch homelab-shell kanaos wordcraft-files wordcraft-web
     find "$REPO_DIR/podman" -maxdepth 1 -name '*.yml' -exec awk '/^[[:space:]]*container_name:/{print $2}' {} + 2>/dev/null
   } | sort -u )
   running_list=$(podman ps --format '{{.Names}}' 2>/dev/null | sort || true)
