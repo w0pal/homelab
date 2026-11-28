@@ -106,7 +106,9 @@ Verify after a reboot:
 
 ## Auto-commit health check
 
-The GitOps cron job is `homelab-ai-gitops` with ID `9330b977c824`. It runs every five minutes. The monitor refreshes the snapshot first, so a clean repo produces no agent run.
+The full write-up is in [auto-commit.md](auto-commit.md). The GitOps cron job
+is `homelab-ai-gitops` with ID `9330b977c824`. It runs every five minutes. The
+monitor refreshes the snapshot first, so a clean repo produces no agent run.
 
 | Command | Expected |
 |---|---|

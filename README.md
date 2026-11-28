@@ -294,6 +294,11 @@ homelab/
 │   └── etc/                             # Sanitized host config snapshot
 ├── docs/
 │   ├── ai-rules.md                      # Rules for AI agents working in this repo
+│   ├── automation.md                    # Automation overview and host boot jobs
+│   ├── bot.md                           # Renovate dependency updates
+│   ├── issues.md                        # Known gotchas and failure checks
+│   ├── auto-commit.md                   # GitOps cron and Paseo repo monitor
+│   ├── retired-experiments.md           # Removed services and jobs
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
 ├── configs/
 │   ├── zsh/                             # Shell config
@@ -308,45 +313,12 @@ homelab/
 
 ## Automation
 
-### Renovate Bot (Auto Dependency Updates)
+Automation notes live in `docs/`, one file per topic:
 
-This repo keeps a [Renovate](https://github.com/renovatebot/renovate) config for GitHub Actions updates. The auto-commit workflow was removed, so there are no workflow files left to update today. Container image refresh is handled by `podman auto-update` every Monday at 03:00. Check `renovate.json` for the remaining rules.
-
-### Weekly image refresh
-
-`scripts/podman-auto-update.sh` runs `podman auto-update` every Monday at
-03:00 Asia/Jakarta from root's crontab. Every compose file in `podman/`
-carries the `io.containers.autoupdate: registry` label, so the refresh picks
-them up.
-
-### AI GitOps sync
-
-A Hermes cron job watches the host every five minutes. It runs `scripts/sync-homelab.sh`, reviews the diff, and groups changes by feature. Each feature gets its own Conventional Commit with a short body that names the files and explains the change. The job pushes to `main` once after all commits.
-
-The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It never commits secrets or real `.env` files. It skips runs when nothing changed.
-
-Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit. The full rules are in `docs/ai-rules.md`.
-
-Private rule: internal, work, client, employer, professional, or non-homelab projects are never included in inventory, README, bootstrap, docs, commits, branch names, tags, issues, or pull requests. Use only the generic phrase `private checkout` when a mention is unavoidable.
-
-The Hermes cron job itself is not stored in this repo. It lives in the Hermes profile. On a fresh host, `scripts/setup-hermes-cron.sh` installs the helper scripts and registers the job through `hermes cron create`. The generated `bootstrap.sh` calls that setup script, so a clone plus `sudo ./bootstrap.sh --apply` brings back the dotfiles, service configs, OpenRC services, and the AI GitOps cron.
-
-### Monitoring the repo from Paseo
-
-A Paseo workspace shows the history of its own agents and sessions, not the full git log of the checkout. Its **Changes → Commits** panel is a diff against the workspace base: on a synced `main` with no workspace commits on top, `Commits 0` and `No commits ahead of base yet` are the expected result, not a broken or empty repository. This filtering is intentional upstream ([issue #4882](https://github.com/getpaseo/paseo/issues/4882)); a repository-wide history view has only been requested, not shipped ([discussion #7250](https://github.com/getpaseo/paseo/discussions/7250)). The homelab git history is complete (`git rev-list --count HEAD` reports every commit, and the clone is not shallow); use git or the monitor script when you want the whole picture.
-
-`scripts/repo-monitor.sh` is a read-only report: branch and sync state, dirty files, the full commit graph, branches, the GitOps cron status and recent runs, and HTTP status for the local API, funnel, public API, and public page. Set `LIMIT=30` to shorten the commit graph.
-
-```sh
-./scripts/repo-monitor.sh
-LIMIT=30 ./scripts/repo-monitor.sh
-```
-
-`paseo.json` registers the same report as the `repo-monitor` workspace script, along with branch-name and commit-message rules for agents started in this project. The Paseo **homelab repo monitor** schedule runs the report hourly and posts a short summary in the app. The Hermes cron remains the authority for committing and pushing; the Paseo monitor only reads.
-
-### Podman boot recovery
-
-The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh` restores the cgroup2 mount, then `scripts/podman-boot.sh` reloads the Podman networks and starts every container that is not already running. Compose files in `podman/` only create containers once, during bootstrap. The generated `bootstrap.sh` installs both scripts into `/etc/local.d` when run with `--containers`.
+- [Automation overview](docs/automation.md), weekly image refresh, Podman boot recovery, and links to the rest.
+- [Bot](docs/bot.md), Renovate dependency updates.
+- [Issues](docs/issues.md), known behavior that looks like a bug and where to check real failures.
+- [Auto commit](docs/auto-commit.md), the Hermes GitOps cron and the Paseo repo monitor.
 
 ---
 
