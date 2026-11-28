@@ -17,6 +17,13 @@ To see the full history, run `./scripts/repo-monitor.sh` from the repo root or
 start the `repo-monitor` script in Paseo. See
 [auto commit](auto-commit.md#monitoring-the-repo-from-paseo) for the details.
 
+## GitOps does not see a new container
+
+A container started from a compose file outside this repo used to be invisible
+to the monitor. `system/inventory.txt` now carries an unmanaged container count
+and fingerprint, which changes the monitor output and wakes the cron. See
+[auto commit](auto-commit.md#new-containers) for what the agent does next.
+
 ## GitOps cron looks stuck
 
 Check the active job, its recent runs, and whether `HEAD` matches `origin/main`.

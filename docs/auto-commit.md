@@ -58,6 +58,26 @@ project. The Paseo **homelab repo monitor** schedule runs the report hourly and
 posts a short summary in the app. The Hermes cron remains the authority for
 committing and pushing; the Paseo monitor only reads.
 
+## New containers
+
+`scripts/sync-homelab.sh` compares every running container with the managed
+list built from `podman/*.yml` and the two built-in workers. A container started
+from a compose file outside this repo shows up as
+`unmanaged_container_count` and `unmanaged_container_fingerprint` in
+`system/inventory.txt`. Names are intentionally left out of the tracked file
+because one could belong to a private checkout.
+
+The count or fingerprint changing alters the monitor output, so the GitOps cron
+wakes up even though no tracked file changed. The agent then inspects the live
+container, skips anything private, adds a sanitized `podman/podman-<name>.yml`
+for homelab services, and reruns the sync until the count returns to zero.
+That compose file is the tracked change the cron commits.
+
+The monitor now also emits a fresh retry token and a content fingerprint while
+the repo is pending. A failed run is retried on the next tick instead of being
+suppressed by identical output, and a same-size file edit still registers as a
+change. Clean sync state produces no output and no agent run.
+
 ## Health check
 
 The command-by-command check is in
