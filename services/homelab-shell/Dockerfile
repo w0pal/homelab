@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.24
 
 RUN apk add --no-cache python3 py3-pip fastfetch util-linux tzdata procps-ng coreutils \
     && pip install --break-system-packages --no-cache-dir pyte
