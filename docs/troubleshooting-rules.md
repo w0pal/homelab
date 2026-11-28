@@ -89,3 +89,17 @@ Watchtower is retired. Weekly image refresh is handled by:
 ```
 
 It runs from root crontab every Monday at 03:00 WIB. Selected containers carry `io.containers.autoupdate=registry`.
+
+## Auto-commit health check
+
+The GitOps cron job is `homelab-ai-gitops` with ID `9330b977c824`. It runs every five minutes. The monitor refreshes the snapshot first, so a clean repo produces no agent run.
+
+| Command | Expected |
+|---|---|
+| `hermes cron status` | Gateway running and one active job |
+| `hermes cron list` | Schedule `every 5m`, workdir `/home/tomori/homelab` |
+| `hermes cron runs 9330b977c824` | Recent runs show `completed` |
+| `git -C /home/tomori/homelab status -sb` | `## main...origin/main` with no files after the run |
+| `git -C /home/tomori/homelab rev-parse HEAD origin/main` | Both hashes are the same |
+
+To verify end to end, make one small tracked change and wait for the next tick. The agent should commit it with a Conventional Commit body and push once. If the run stays `running` for more than one interval, cancel that run before retrying.
