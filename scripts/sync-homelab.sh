@@ -32,6 +32,11 @@ if ! grep -qx 'nix' system/etc/apk/world; then
   printf 'nix\n' >> system/etc/apk/world
   LC_ALL=C sort -o system/etc/apk/world system/etc/apk/world
 fi
+# These tools come from the Nix profile. Keep them out of the apk snapshot so
+# a later sync cannot reintroduce duplicates.
+for pkg in btop chafa eza fastfetch fd fzf github-cli jq lazygit rclone ripgrep yazi yazi-cli zoxide; do
+  sed -i "/^${pkg}$/d" system/etc/apk/world
+done
 copy_file /etc/modules system/etc/modules
 copy_file /etc/ssh/sshd_config system/etc/ssh/sshd_config
 copy_file /etc/rc.conf system/etc/rc.conf

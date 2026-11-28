@@ -1,0 +1,56 @@
+#!/bin/sh
+# gh wrapper that selects an account by the current repository owner.
+# Auth management commands pass through untouched so login/switch still work.
+set -eu
+
+REAL_GH="$HOME/.nix-profile/bin/gh"
+[ -x "$REAL_GH" ] || REAL_GH=/usr/bin/gh
+HOMELAB_OWNER=w0pal
+HOMELAB_ACCOUNT=w0pal
+DEFAULT_ACCOUNT=w0palphotos
+
+# Let gh manage its own auth state.
+if [ "${1:-}" = auth ]; then
+  case "${2:-}" in
+    login|logout|switch|status|setup-git|refresh|token|git-credential)
+      exec "$REAL_GH" "$@"
+      ;;
+  esac
+fi
+
+# An explicit token always wins.
+[ -z "${GH_TOKEN:-}" ] || exec "$REAL_GH" "$@"
+
+url=$(git remote get-url origin 2>/dev/null || true)
+case "$url" in
+  *github.com:*)
+    owner=${url#*github.com:}
+    ;;
+  *github.com/*)
+    owner=${url#*github.com/}
+    ;;
+  *)
+    owner=""
+    ;;
+esac
+owner=${owner%%/*}
+owner=${owner%.git}
+
+if [ "$owner" = "$HOMELAB_OWNER" ]; then
+  account=$HOMELAB_ACCOUNT
+else
+  account=$DEFAULT_ACCOUNT
+fi
+
+token=$("$REAL_GH" auth token -h github.com -u "$account" 2>/dev/null || true)
+if [ -z "$token" ]; then
+  account=$DEFAULT_ACCOUNT
+  token=$("$REAL_GH" auth token -h github.com -u "$account" 2>/dev/null || true)
+fi
+
+[ -z "${GH_ROUTE_DEBUG:-}" ] || echo "gh-route: owner=$owner account=$account" >&2
+
+if [ -n "$token" ]; then
+  GH_TOKEN=$token exec "$REAL_GH" "$@"
+fi
+exec "$REAL_GH" "$@"

@@ -5,7 +5,6 @@ aom
 bash
 binutils
 brotli
-btop
 build-base
 busybox-mdev-openrc
 bzip2
@@ -14,7 +13,6 @@ caddy
 cairo
 cargo
 catatonit
-chafa
 chromium
 cjson
 cmake
@@ -33,9 +31,6 @@ dosfstools
 e2fsprogs
 exfatprogs
 expat
-eza
-fastfetch
-fd
 ffmpeg
 fftw
 file
@@ -45,7 +40,6 @@ flac
 fontconfig
 freetype
 fribidi
-fzf
 g++
 gcc
 gcompat
@@ -53,7 +47,6 @@ gdk-pixbuf
 ghostscript
 giflib
 git
-github-cli
 glib
 gmp
 gnupg
@@ -73,11 +66,9 @@ imath
 inxi
 iw
 jbig2dec
-jq
 keyutils
 krb5
 lame
-lazygit
 leptonica
 libarchive
 libass
@@ -220,10 +211,8 @@ poppler
 py3-pip
 python3
 rav1e
-rclone
 readline
 redis
-ripgrep
 rsync
 sdl2
 sed
@@ -250,9 +239,6 @@ vulkan-loader
 wireguard-tools
 wireless-regdb
 wpa_supplicant
-yazi
-yazi-cli
-zoxide
 zsh
 zsh-vcs
 zstd

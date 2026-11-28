@@ -297,6 +297,10 @@ homelab/
 │   ├── paseo.openrc
 │   ├── portfolio-api.openrc
 │   └── README.md
+├── configs/
+│   ├── local-bin/                       # gh wrappers that use the Nix binary
+│   ├── nvim/                            # Neovim config
+│   └── zsh/                             # zsh config
 ├── bootstrap.sh                         # Generated one-file host bootstrap
 ├── flake.nix                            # Pinned CLI tools
 ├── flake.lock                           # Locked nixpkgs revision
@@ -324,10 +328,7 @@ homelab/
 │   ├── auto-commit.md                   # GitOps cron and Paseo repo monitor
 │   ├── retired-experiments.md           # Removed services and jobs
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
-├── configs/
-│   ├── zsh/                             # Shell config
-│   └── nvim/                            # Neovim config
-├── renovate.json                        # Renovate bot configuration
+                        # Renovate bot configuration
 ├── AGENTS.md                            # Short entry point for AI agents
 ├── .gitignore
 └── README.md

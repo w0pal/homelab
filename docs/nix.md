@@ -14,14 +14,21 @@ This flake pins a small set of userland CLI tools. It does not replace apk or Op
 
 zsh puts `$HOME/.nix-profile/bin` ahead of the apk paths. The Nix versions of the tools above win when both are installed. The apk copies stay as a fallback.
 
+zsh also adds `$HOME/.nix-profile/share/zsh/site-functions` to `fpath`, so completions keep working after the apk completion packages are removed.
+
+The `gh` wrappers in `configs/local-bin/` select the GitHub account from the repo owner. They now call the Nix binary instead of the removed `/usr/bin/gh`.
+
 Install or refresh the profile from the repo:
 
 ```sh
+export NIX_CONFIG="experimental-features = nix-command flakes"
 nix profile install path:$HOME/homelab#default
 nix profile upgrade '.*'
 ```
 
 Enter the pinned dev shell with `nix develop path:$HOME/homelab`.
+
+If Nix warns that `/nix/var/nix` does not exist, create `/nix/var/nix` and `/nix/store` before installing the profile. Without those directories Nix falls back to a chroot store under `~/.local/share/nix/root`. That leftover can be deleted after a successful install into `/nix/store`.
 
 ## Why not all 257 apk packages
 

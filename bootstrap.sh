@@ -177,6 +177,12 @@ for f in "$REPO_DIR"/configs/nvim/* "$REPO_DIR"/configs/nvim/.[!.]*; do
   install_file "$f" "$HOME_DIR/.config/nvim/$(basename "$f")" 644
 done
 
+# Local bin wrappers (gh account routing) are part of the host config.
+for f in "$REPO_DIR"/configs/local-bin/*; do
+  [ -f "$f" ] || continue
+  install_file "$f" "$HOME_DIR/.local/bin/$(basename "$f")" 755
+done
+
 if [ "$APPLY" = 1 ]; then
   chown -R "$USER_NAME" "$HOME_DIR/.config/zsh" "$HOME_DIR/.config/nvim" "$HOME_DIR/.zshrc" 2>/dev/null || true
 fi
@@ -193,7 +199,7 @@ if [ "$PACKAGES" = 1 ]; then
   # Single-user Nix: apk installs the binary, the target user owns the store.
   # Skip the chown if a daemon-managed store already exists.
   if [ ! -e /nix/var/nix/daemon-socket ]; then
-    run mkdir -p /nix
+    run mkdir -p /nix/var/nix /nix/store
     run chown -R "$USER_NAME" /nix
   fi
 fi

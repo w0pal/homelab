@@ -2,6 +2,7 @@
 # Only run compinit once a day to speed up startup
 autoload -Uz compinit
 zmodload -i zsh/complist
+fpath=("$HOME/.nix-profile/share/zsh/site-functions" $fpath)
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m+24) ]]; then
   compinit
 else
