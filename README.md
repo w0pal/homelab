@@ -224,7 +224,7 @@ sudo ./bootstrap.sh --apply --packages --containers
 
 ### Pinned CLI tools (Nix)
 
-A flake pins userland tools such as btop, eza, fd, ripgrep, yazi, PHP, Go and more. apk still owns the base system, init and services. See `docs/nix.md`.
+A flake pins userland tools such as btop, eza, fd, ripgrep, yazi, PHP, Go, Claude Code, Codex, Paseo and 9router. `bootstrap.sh --apply --packages` installs the profile, so no manual `npm install -g` is needed for those CLIs. apk still owns the base system, init and services. See `docs/nix.md`.
 
 ### Individual Service Commands
 
@@ -300,6 +300,7 @@ homelab/
 ├── configs/
 │   ├── local-bin/                       # gh wrappers that use the Nix binary
 │   ├── nvim/                            # Neovim config
+│   ├── npm-global/                      # Pinned npm-global CLI manifest (package.json; node_modules ignored)
 │   └── zsh/                             # zsh config
 ├── bootstrap.sh                         # Generated one-file host bootstrap
 ├── flake.nix                            # Pinned CLI tools
