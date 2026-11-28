@@ -331,6 +331,19 @@ Private rule: internal, work, client, employer, professional, or non-homelab pro
 
 The Hermes cron job itself is not stored in this repo. It lives in the Hermes profile. On a fresh host, `scripts/setup-hermes-cron.sh` installs the helper scripts and registers the job through `hermes cron create`. The generated `bootstrap.sh` calls that setup script, so a clone plus `sudo ./bootstrap.sh --apply` brings back the dotfiles, service configs, OpenRC services, and the AI GitOps cron.
 
+### Monitoring the repo from Paseo
+
+A Paseo workspace shows the history of its own agents and sessions, not the full git log of the checkout. The homelab git history is complete (`git rev-list --count HEAD` reports every commit, and the clone is not shallow); use git or the monitor script when you want the whole picture.
+
+`scripts/repo-monitor.sh` is a read-only report: branch and sync state, dirty files, the full commit graph, branches, the GitOps cron status and recent runs, and HTTP status for the local API, funnel, public API, and public page. Set `LIMIT=30` to shorten the commit graph.
+
+```sh
+./scripts/repo-monitor.sh
+LIMIT=30 ./scripts/repo-monitor.sh
+```
+
+`paseo.json` registers the same report as the `repo-monitor` workspace script, along with branch-name and commit-message rules for agents started in this project. The Paseo **homelab repo monitor** schedule runs the report hourly and posts a short summary in the app. The Hermes cron remains the authority for committing and pushing; the Paseo monitor only reads.
+
 ### Podman boot recovery
 
 The host uses rootful Podman on Alpine OpenRC. `scripts/podman-cgroup-boot.sh` restores the cgroup2 mount, then `scripts/podman-boot.sh` reloads the Podman networks and starts every container that is not already running. Compose files in `podman/` only create containers once, during bootstrap. The generated `bootstrap.sh` installs both scripts into `/etc/local.d` when run with `--containers`.
