@@ -15,7 +15,7 @@ custom=$(printf '%b' "$custom" | sort)
 services=""
 for f in "$REPO"/podman/*.yml; do
   [ -f "$f" ] || continue
-  services="${services}${f}\n"
+  services="${services}podman/$(basename "$f")\n"
 done
 services=$(printf '%b' "$services" | sort)
 
@@ -37,7 +37,8 @@ CONTAINERS=0
 PACKAGES=0
 FSTAB=0
 USER_NAME=${SUDO_USER:-$(id -un)}
-HOME_DIR=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6 || echo "/home/$USER_NAME")
+HOME_DIR=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
+[ -n "$HOME_DIR" ] || HOME_DIR="/home/$USER_NAME"
 
 EOF
   printf 'CUSTOM_INIT="%s"\n' "$custom"
@@ -116,6 +117,20 @@ run_as_user() {
   fi
 }
 
+install_template() {
+  src=$1
+  dst=$2
+  mode=${3:-644}
+  [ -f "$src" ] || return 0
+  if [ "$APPLY" = 1 ]; then
+    mkdir -p "$(dirname "$dst")"
+    sed -e "s|{{HOMELAB_USER}}|$USER_NAME|g" -e "s|{{HOMELAB_HOME}}|$HOME_DIR|g" "$src" > "$dst"
+    chmod "$mode" "$dst"
+  else
+    printf '[dry-run] render %s -> %s (%s)\n' "$src" "$dst" "$mode"
+  fi
+}
+
 echo "Repo: $REPO_DIR"
 echo "Target user: $USER_NAME"
 echo "Home: $HOME_DIR"
@@ -143,7 +158,7 @@ else
 fi
 
 for svc in $CUSTOM_INIT; do
-  install_file "$REPO_DIR/init/$svc.openrc" "/etc/init.d/$svc" 755
+  install_template "$REPO_DIR/init/$svc.openrc" "/etc/init.d/$svc" 755
   enable_service "$svc"
 done
 
@@ -151,11 +166,11 @@ for svc in $DEFAULT_RUNLEVEL; do
   enable_service "$svc"
 done
 
-if [ -f "$REPO_DIR/system/crontab.tomori" ]; then
+if [ -f "$REPO_DIR/system/crontab" ]; then
   if [ "$APPLY" = 1 ]; then
-    crontab -u "$USER_NAME" "$REPO_DIR/system/crontab.tomori"
+    crontab -u "$USER_NAME" "$REPO_DIR/system/crontab"
   else
-    printf '[dry-run] crontab -u %s %s\n' "$USER_NAME" "$REPO_DIR/system/crontab.tomori"
+    printf '[dry-run] crontab -u %s %s\n' "$USER_NAME" "$REPO_DIR/system/crontab"
   fi
 fi
 
@@ -192,7 +207,7 @@ if [ "$CONTAINERS" = 1 ]; then
   enable_service local
   podman network exists shared-web >/dev/null 2>&1 || run podman network create shared-web
   for f in $ACTIVE_SERVICES; do
-    run podman-compose -p "$USER_NAME" -f "$f" up -d
+    run podman-compose -p "$USER_NAME" -f "$REPO_DIR/$f" up -d
   done
 fi
 
