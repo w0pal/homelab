@@ -139,6 +139,9 @@ do
   install_file "$REPO_DIR/system/$rel" "/$rel" 644
 done
 
+# local.d scripts must be executable or OpenRC's local service skips them.
+install_file "$REPO_DIR/system/etc/local.d/power-powersave.start" /etc/local.d/power-powersave.start 755
+
 if [ "$FSTAB" = 1 ]; then
   install_file "$REPO_DIR/system/etc/fstab" /etc/fstab 644
 else

@@ -90,6 +90,20 @@ $HOME/homelab/scripts/podman-auto-update.sh
 
 It runs from root crontab every Monday at 03:00 WIB. Selected containers carry `io.containers.autoupdate=registry`.
 
+## Idle power and persistence
+
+C-states need no configuration on this host. `intel_idle` with the `menu` governor already exposes POLL/C1/C1E/C3/C6/C7s/C8 and the default `intel_idle.max_cstate` is 9. Do not add `intel_idle.max_cstate` or `idle=nomwait`; those restrict deep states and raise idle power.
+
+The runtime-only knobs are set by `system/etc/local.d/power-powersave.start`, which OpenRC's `local` service runs at boot. It sets the HWP energy preference to `balance_power`, keeps turbo and `max_perf_pct` at 100, and sets PCIe ASPM to `powersave`. Bootstrap installs that script with mode 755 so it actually runs.
+
+Verify after a reboot:
+
+| Command | Expected |
+|---|---|
+| `cat /sys/devices/system/cpu/cpufreq/policy0/energy_performance_preference` | `balance_power` |
+| `cat /sys/module/pcie_aspm/parameters/policy` | `[powersave]` |
+| `cat /sys/devices/system/cpu/cpuidle/current_driver` | `intel_idle` |
+
 ## Auto-commit health check
 
 The GitOps cron job is `homelab-ai-gitops` with ID `9330b977c824`. It runs every five minutes. The monitor refreshes the snapshot first, so a clean repo produces no agent run.

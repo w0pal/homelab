@@ -1,0 +1,32 @@
+#!/bin/sh
+# Persistent idle-power policy: deepest C-states already enabled by intel_idle,
+# HWP biased toward efficiency, full turbo still available under load.
+# Installed as an executable local.d/*.start so OpenRC's local service runs it
+# on every boot. Keep all paths generic so a fresh host renders identically.
+
+# Intel Hardware P-State energy preference. ArchWiki Power management lists
+# default/performance/balance_performance/balance_power/power and recommends
+# balance_power for energy saving. HWP still boosts to max when load arrives.
+for policy in /sys/devices/system/cpu/cpufreq/policy*; do
+  pref="$policy/energy_performance_preference"
+  if [ -w "$pref" ]; then
+    printf '%s\n' balance_power > "$pref"
+  fi
+done
+
+# Preserve the full performance envelope for bursty load.
+if [ -w /sys/devices/system/cpu/intel_pstate/no_turbo ]; then
+  printf '%s\n' 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+fi
+if [ -w /sys/devices/system/cpu/intel_pstate/max_perf_pct ]; then
+  printf '%s\n' 100 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+fi
+
+# PCIe ASPM: allow idle links to drop to lower power states.
+if [ -w /sys/module/pcie_aspm/parameters/policy ]; then
+  printf '%s\n' powersave > /sys/module/pcie_aspm/parameters/policy
+fi
+
+# C-states are already unrestricted: intel_idle with the menu governor exposes
+# POLL/C1/C1E/C3/C6/C7s/C8 and the default max_cstate is 9. Do not cap them.
+exit 0
