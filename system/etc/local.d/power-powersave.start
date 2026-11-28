@@ -22,10 +22,10 @@ if [ -w /sys/devices/system/cpu/intel_pstate/max_perf_pct ]; then
   printf '%s\n' 100 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
 fi
 
-# PCIe ASPM: allow idle links to drop to lower power states.
-if [ -w /sys/module/pcie_aspm/parameters/policy ]; then
-  printf '%s\n' powersave > /sys/module/pcie_aspm/parameters/policy
-fi
+# PCIe ASPM is deliberately left alone. This kernel only has
+# CONFIG_PCIEASPM_DEFAULT built in, so writing "powersave" to
+# /sys/module/pcie_aspm/parameters/policy is rejected. A board-specific gain
+# would need pcie_aspm=force in GRUB_CMDLINE_LINUX_DEFAULT plus a reboot.
 
 # C-states are already unrestricted: intel_idle with the menu governor exposes
 # POLL/C1/C1E/C3/C6/C7s/C8 and the default max_cstate is 9. Do not cap them.
