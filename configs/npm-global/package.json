@@ -4,7 +4,7 @@
   "dependencies": {
     "@tencent-ai/codebuddy-code": "2.185.0",
     "9router": "0.5.123",
-    "bansos-router": "0.6.3",
+    "bansos-router": "0.6.4",
     "vercel": "66.1.0"
   }
 }
