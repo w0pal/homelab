@@ -35,7 +35,7 @@ fi
 # These tools come from the Nix profile. Keep them out of the apk snapshot so
 # a later sync cannot reintroduce duplicates. Use fixed-string matching so
 # package names such as g++ are not read as regex.
-nix_owned='btop chafa eza fastfetch fd fzf github-cli jq lazygit rclone ripgrep yazi yazi-cli zoxide binutils build-base cargo cmake composer dmidecode ffmpeg fio gcc g++ ghostscript go htop imagemagick imagemagick-libs inxi iw m4 make musl-dev neovim nmap nmap-ncat nmap-scripts pciutils poppler rsync smartmontools speedtest-cli tesseract-ocr tree-sitter-cli usbutils'
+nix_owned='btop chafa eza fastfetch fd fzf github-cli jq lazygit rclone ripgrep yazi yazi-cli zoxide binutils build-base cargo cmake composer dmidecode ffmpeg fio gcc g++ ghostscript go htop imagemagick imagemagick-libs inxi iw m4 make musl-dev neovim nmap nmap-ncat nmap-scripts pciutils poppler smartmontools speedtest-cli tesseract-ocr tree-sitter-cli usbutils'
 grep -v '^php83' system/etc/apk/world | grep -vxF $nix_owned > system/etc/apk/world.tmp
 mv system/etc/apk/world.tmp system/etc/apk/world
 copy_file /etc/modules system/etc/modules
