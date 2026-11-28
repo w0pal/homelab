@@ -201,6 +201,12 @@ fi
 if [ "$PACKAGES" = 1 ]; then
   pkgs=$(grep -v '^#' "$REPO_DIR/system/etc/apk/world" 2>/dev/null | tr '\n' ' ' || true)
   run apk add --no-cache $pkgs
+  # Single-user Nix: apk installs the binary, the target user owns the store.
+  # Skip the chown if a daemon-managed store already exists.
+  if [ ! -e /nix/var/nix/daemon-socket ]; then
+    run mkdir -p /nix
+    run chown -R "$USER_NAME" /nix
+  fi
 fi
 
 if [ "$CONTAINERS" = 1 ]; then
