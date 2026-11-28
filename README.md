@@ -224,7 +224,7 @@ sudo ./bootstrap.sh --apply --packages --containers
 
 ### Pinned CLI tools (Nix)
 
-A small flake pins userland tools such as btop, eza, fd, ripgrep and yazi. apk still owns the base system, init and services. See `docs/nix.md`.
+A flake pins userland tools such as btop, eza, fd, ripgrep, yazi, PHP, Go and more. apk still owns the base system, init and services. See `docs/nix.md`.
 
 ### Individual Service Commands
 

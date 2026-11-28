@@ -4,7 +4,7 @@ This flake pins a small set of userland CLI tools. It does not replace apk or Op
 
 ## What is pinned
 
-`flake.nix` declares btop, chafa, eza, fastfetch, fd, fzf, gh, jq, lazygit, rclone, ripgrep, yazi and zoxide. The dev shell adds Go, Node.js and Python without putting them in the host profile.
+`flake.nix` declares btop, binutils, cargo, chafa, cmake, composer, dmidecode, eza, fastfetch, fd, ffmpeg, fio, fzf, gh, ghostscript, go, gcc, htop, imagemagick, inxi, jq, lazygit, m4, make, neovim, nmap, pciutils, poppler-utils, rclone, ripgrep, rsync, smartmontools, speedtest-cli, tesseract, tree-sitter-cli, usbutils, yazi, zoxide, and PHP extensions via `phpWithExtensions`. The dev shell adds Go, Node.js and Python without putting them in the host profile.
 
 `flake.lock` is the pin. Commit it whenever it changes. A rebuild from the same lockfile gets the same package versions on this host or another one.
 
