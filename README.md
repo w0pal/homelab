@@ -1,9 +1,11 @@
 # My Homelab
 
 This repository contains the GitOps configuration for my personal homeserver.
-This is purely a **hobby project**. It runs services for fun and personal
-convenience (media, passwords, network tools), not for development, production,
-or anything serious. I tinker with it in my free time.
+It started as a hobby project, and I now use it for development too. I also use
+it as a semi staging box: I try changes here first, then carry the ones that
+work over to deployment. It still runs services for fun and personal
+convenience (media, passwords, network tools). It is not a production
+environment.
 
 I don't aim for perfection here (seriously). Things will change often as I experiment and
 figure out better ways to manage this. This repo works both as
@@ -192,7 +194,8 @@ Direct ports:
 ### Deploy All Services
 
 If you are using an AI to clone or troubleshoot this host, read
-`docs/ai-rules.md` first. Private work or professional projects must never
+`docs/ai-rules.md` first. `AGENTS.md` has the install flow for another machine.
+Private work or professional projects must never
 enter this repo, the inventory, bootstrap, or commit messages.
 
 ```bash
@@ -232,7 +235,7 @@ podman-compose -f podman/podman-fetch.yml up -d --build
 # Nextcloud (needs MYSQL_* / NEXTCLOUD_* vars in .env)
 podman-compose -f podman/podman-nextcloud.yml up -d
 
-# Wordcraft (paths assume /home/tomori)
+# Wordcraft (paths assume $HOME)
 podman-compose -f podman/podman-wordcraft.yml up -d
 
 # DVWA lab, reachable only from the host
@@ -242,7 +245,7 @@ podman-compose -f podman/podman-dvwa.yml up -d
 sudo ./scripts/podman-boot.sh
 
 # Image refresh (weekly, Podman auto-update)
-sudo /home/tomori/homelab/scripts/podman-auto-update.sh
+sudo $HOME/homelab/scripts/podman-auto-update.sh
 
 ```
 
@@ -291,7 +294,6 @@ homelab/
 │   └── etc/                             # Sanitized host config snapshot
 ├── docs/
 │   ├── ai-rules.md                      # Rules for AI agents working in this repo
-│   ├── retired-experiments.md           # Historical services and retired automation
 │   └── troubleshooting-rules.md         # Chain checks when a service looks down
 ├── configs/
 │   ├── zsh/                             # Shell config
@@ -315,15 +317,13 @@ This repo keeps a [Renovate](https://github.com/renovatebot/renovate) config for
 `scripts/podman-auto-update.sh` runs `podman auto-update` every Monday at
 03:00 Asia/Jakarta from root's crontab. Every compose file in `podman/`
 carries the `io.containers.autoupdate: registry` label, so the refresh picks
-them up. Historical details are in `docs/retired-experiments.md`.
+them up.
 
 ### AI GitOps sync
 
 A Hermes cron job watches the host every five minutes. It runs `scripts/sync-homelab.sh`, reviews the diff, and groups changes by feature. Each feature gets its own Conventional Commit with a short body that names the files and explains the change. The job pushes to `main` once after all commits.
 
 The job uses the `git-conventional-push` and `w0pal-writing-style` skills. It never commits secrets or real `.env` files. It skips runs when nothing changed.
-
-Retired automation is documented in `docs/retired-experiments.md`.
 
 Documentation stays in sync too. The monitor includes `system/inventory.txt`, so the AI job updates this README when a service is installed or removed. It also runs `scripts/generate-bootstrap.sh`, so `bootstrap.sh` always reflects the current snapshot. The AI uses the `docs-generator` and `w0pal-writing-style` skills. Documentation changes get their own Conventional Commit. The full rules are in `docs/ai-rules.md`.
 

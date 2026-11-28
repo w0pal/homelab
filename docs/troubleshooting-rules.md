@@ -42,7 +42,7 @@ homelab-fetch container
 On 2026-11-26 the status was off because `~/Projects/portfolio-web` had only `.data/homelab.json`. The working checkout was still in `~/storage/Projects/portfolio-web`. Starting the API from there restored the chain:
 
 ```sh
-cd /home/tomori/storage/Projects/portfolio-web
+cd $HOME/storage/Projects/portfolio-web
 node --env-file=.env scripts/dev-api.mjs
 ```
 
@@ -50,7 +50,7 @@ The OpenRC service must use that same path. Check with:
 
 | Command | Expected |
 |---|---|
-| `grep '^directory' /etc/init.d/portfolio-api` | `/home/tomori/storage/Projects/portfolio-web` |
+| `grep '^directory' /etc/init.d/portfolio-api` | `$HOME/storage/Projects/portfolio-web` |
 | `ss -ltnp | grep ':3001'` | `0.0.0.0:3001` |
 | `curl http://192.168.0.240:3001/api/homelab` | `200` |
 | `podman logs --tail 5 homelab-fetch` | `pushed #N` |
@@ -85,7 +85,7 @@ If this breaks again, check the local API before touching Vercel or Tailscale.
 Watchtower is retired. Weekly image refresh is handled by:
 
 ```sh
-/home/tomori/homelab/scripts/podman-auto-update.sh
+$HOME/homelab/scripts/podman-auto-update.sh
 ```
 
 It runs from root crontab every Monday at 03:00 WIB. Selected containers carry `io.containers.autoupdate=registry`.
@@ -97,9 +97,9 @@ The GitOps cron job is `homelab-ai-gitops` with ID `9330b977c824`. It runs every
 | Command | Expected |
 |---|---|
 | `hermes cron status` | Gateway running and one active job |
-| `hermes cron list` | Schedule `every 5m`, workdir `/home/tomori/homelab` |
+| `hermes cron list` | Schedule `every 5m`, workdir `$HOME/homelab` |
 | `hermes cron runs 9330b977c824` | Recent runs show `completed` |
-| `git -C /home/tomori/homelab status -sb` | `## main...origin/main` with no files after the run |
-| `git -C /home/tomori/homelab rev-parse HEAD origin/main` | Both hashes are the same |
+| `git -C $HOME/homelab status -sb` | `## main...origin/main` with no files after the run |
+| `git -C $HOME/homelab rev-parse HEAD origin/main` | Both hashes are the same |
 
 To verify end to end, make one small tracked change and wait for the next tick. The agent should commit it with a Conventional Commit body and push once. If the run stays `running` for more than one interval, cancel that run before retrying.
