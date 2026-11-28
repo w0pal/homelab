@@ -36,7 +36,15 @@ APPLY=0
 CONTAINERS=0
 PACKAGES=0
 FSTAB=0
-USER_NAME=${SUDO_USER:-$(id -un)}
+USER_NAME=${SUDO_USER:-${DOAS_USER:-$(id -un)}}
+# doas may not export either variable. When invoked by root, take the owner
+# of the repo checkout, which is the homelab user on this host.
+if [ "$USER_NAME" = root ] && [ -d "$REPO_DIR" ]; then
+  repo_owner=$(stat -c %U "$REPO_DIR" 2>/dev/null || true)
+  if [ -n "$repo_owner" ] && [ "$repo_owner" != root ]; then
+    USER_NAME=$repo_owner
+  fi
+fi
 HOME_DIR=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
 [ -n "$HOME_DIR" ] || HOME_DIR="/home/$USER_NAME"
 
@@ -53,7 +61,7 @@ Usage: ./bootstrap.sh [options]
 Options:
   --apply        Write files. Without this, the script only prints its plan.
   --containers   Create shared-web and start active compose services.
-  --packages     Install packages listed in system/etc/apk/world.
+  --packages     Install packages listed in system/etc/apk/world and the Nix profile.
   --with-fstab   Also copy fstab. Host UUIDs may not match, so this is opt-in.
   -h, --help     Show this help.
 
@@ -194,8 +202,12 @@ for f in "$REPO_DIR"/configs/local-bin/*; do
   install_file "$f" "$HOME_DIR/.local/bin/$(basename "$f")" 755
 done
 
+# Pinned npm-global manifest. node_modules are never tracked.
+install_file "$REPO_DIR/configs/npm-global/package.json" "$HOME_DIR/.npm-global/package.json" 644
+
 if [ "$APPLY" = 1 ]; then
   chown -R "$USER_NAME" "$HOME_DIR/.config/zsh" "$HOME_DIR/.config/nvim" "$HOME_DIR/.zshrc" 2>/dev/null || true
+  chown "$USER_NAME" "$HOME_DIR/.npm-global/package.json" 2>/dev/null || true
 fi
 
 if [ -f "$REPO_DIR/scripts/setup-hermes-cron.sh" ]; then
@@ -213,6 +225,16 @@ if [ "$PACKAGES" = 1 ]; then
     run mkdir -p /nix/var/nix /nix/store
     run chown -R "$USER_NAME" /nix
   fi
+  # Install the pinned Nix userland as the target user. This replaces the
+  # manual npm install -g step for the tools packaged in nixpkgs.
+  if command -v nix >/dev/null 2>&1; then
+    run_as_user "export NIX_CONFIG='experimental-features = nix-command flakes'; cd '$REPO_DIR' && nix profile install 'path:$REPO_DIR#default' && nix profile upgrade homelab"
+  else
+    echo "skip Nix profile: nix binary not found"
+  fi
+  # Install the npm-global CLIs that are not in nixpkgs from the pinned manifest.
+  run_as_user "\"$HOME_DIR/.nix-profile/bin/npm\" install --prefix \"$HOME_DIR/.npm-global\" --no-audit --no-fund"
+  run_as_user "\"$HOME_DIR/.nix-profile/bin/npm\" install-scripts approve --all --allow-scripts-pin --prefix \"$HOME_DIR/.npm-global\""
 fi
 
 if [ "$CONTAINERS" = 1 ]; then
@@ -229,7 +251,7 @@ fi
 echo
 echo "Next steps:"
 echo "  review the plan, then run: sudo ./bootstrap.sh --apply"
-echo "  add --containers to start services, --packages to install apk packages"
+echo "  add --containers to start services, --packages to install apk and Nix packages"
 echo "  real secrets stay in local .env files, never in this repo"
 EOF
 } > "$TMP"
