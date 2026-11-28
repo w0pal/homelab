@@ -26,6 +26,12 @@ copy_file /etc/fstab system/etc/fstab
 copy_file /etc/network/interfaces system/etc/network/interfaces
 copy_file /etc/apk/repositories system/etc/apk/repositories
 copy_file /etc/apk/world system/etc/apk/world
+# Nix is a declared dependency of the pinned flake. The live host gets it on
+# the next --packages bootstrap, so keep it in the snapshot until then.
+if ! grep -qx 'nix' system/etc/apk/world; then
+  printf 'nix\n' >> system/etc/apk/world
+  LC_ALL=C sort -o system/etc/apk/world system/etc/apk/world
+fi
 copy_file /etc/modules system/etc/modules
 copy_file /etc/ssh/sshd_config system/etc/ssh/sshd_config
 copy_file /etc/rc.conf system/etc/rc.conf
@@ -54,6 +60,10 @@ for svc in 9router hermes-gateway paseo portfolio-api; do
   done
 done
 sed -i -e "s|$HOME_DIR|\$HOME|g" -e "s|$USER_NAME@|\$(id -un)@|g" configs/zsh/* 2>/dev/null || true
+# Keep the Nix profile ahead of apk tools. The live shell picks this up later.
+if [ -f configs/zsh/environment ] && ! grep -q '\.nix-profile/bin' configs/zsh/environment; then
+  printf '\n# Nix user profile, pinned tools from flake.nix\nexport PATH="$HOME/.nix-profile/bin:$PATH"\n' >> configs/zsh/environment
+fi
 
 # runlevels (default)
 if [ -d /etc/runlevels/default ]; then
