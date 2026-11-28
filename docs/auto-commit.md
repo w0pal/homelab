@@ -54,9 +54,11 @@ LIMIT=30 ./scripts/repo-monitor.sh
 
 `paseo.json` registers the same report as the `repo-monitor` workspace script,
 along with branch-name and commit-message rules for agents started in this
-project. The Paseo **homelab repo monitor** schedule runs the report hourly and
-posts a short summary in the app. The Hermes cron remains the authority for
-committing and pushing; the Paseo monitor only reads.
+project. The hourly check runs from the user crontab, appends to
+`$HOME/.local/log/homelab-repo-monitor.log`, and sends no Paseo notification:
+a Paseo new-agent schedule always opens a visible run workspace and posts a
+chat report, even with `notifyOnFinish` disabled. The Hermes cron remains the
+authority for committing and pushing; the monitor only reads.
 
 ## New containers
 

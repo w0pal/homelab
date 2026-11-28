@@ -1,6 +1,6 @@
 #!/bin/sh
 # Read-only health and history report for the homelab repo.
-# Used from a Paseo terminal/workspace script and by the Paseo monitor schedule.
+# Used from a Paseo terminal/workspace script and by the hourly user crontab.
 # Never writes to the repo, never prints credentials.
 set -u
 REPO=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)

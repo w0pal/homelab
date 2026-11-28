@@ -1,4 +1,3 @@
-
 # Hermes gateway auto-start + keep-alive
 
 # 9router auto-start + keep-alive
@@ -15,3 +14,6 @@
 
 # Weekly local cleanup: stale Nix generations, npm orphans, unused images
 0 3 * * 0 $HOME/homelab/scripts/cleanup-homelab.sh --apply >> $HOME/.local/log/homelab-cleanup.log 2>&1
+
+# Hourly homelab repo monitor (silent; no Paseo notification)
+0 * * * * cd $HOME/homelab && LIMIT=20 ./scripts/repo-monitor.sh >> $HOME/.local/log/homelab-repo-monitor.log 2>&1
