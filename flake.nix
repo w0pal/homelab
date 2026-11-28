@@ -17,7 +17,9 @@
         binutils
         cargo
         chafa
+        claude-code
         cmake
+        codex
         (php83Packages.composer)
         dmidecode
         eza
@@ -40,17 +42,22 @@
         gnumake
         neovim
         nmap
+        nodejs
+        paseo
         pciutils
         poppler-utils
         rclone
         ripgrep
         smartmontools
         speedtest-cli
+        tailscale
         tesseract
+        tmux
         tree-sitter
         usbutils
         yazi
         zoxide
+        zsh
         php83
       ];
     in

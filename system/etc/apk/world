@@ -130,8 +130,6 @@ nettle
 nfs-utils
 nftables
 nix
-nodejs
-npm
 npth
 nspr
 nss
@@ -172,7 +170,6 @@ sqlite
 svt-av1
 tailscale
 tar
-tmux
 unzip
 util-linux
 vulkan-headers
